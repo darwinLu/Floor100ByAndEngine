@@ -10,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.primitive.Rectangle;
+import org.andengine.entity.scene.IOnSceneTouchListener;
+import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.shape.IAreaShape;
 import org.andengine.entity.sprite.AnimatedSprite;
@@ -17,6 +19,7 @@ import org.andengine.entity.text.Text;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
@@ -28,7 +31,7 @@ import pers.lx.floor100byandengine.manager.SceneManager;
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_HEIGHT;
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_WIDTH;
 
-public class GameScene extends BaseScene {
+public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     private AnimatedSprite mPlayerRun;
 
@@ -41,6 +44,8 @@ public class GameScene extends BaseScene {
     private float headLinePixel = CAMERA_HEIGHT/2;
     private float deadLinePixel = CAMERA_HEIGHT + 50;
     private Body floorBody;
+    private Body leftBody;
+    private Body rightBody;
 
     @Override
     public void createScene() {
@@ -107,7 +112,7 @@ public class GameScene extends BaseScene {
 //        //生成多个平台
 //        platformNumber = 10;
 //        for(int i=0;i<platformNumber;i++){
-//            IAreaShape platform = new Rectangle((i%2)*(CAMERA_WIDTH - 400),CAMERA_HEIGHT - (i + 2)*400,400,100,getVertexBufferObjectManager());
+//            IAreaShape platform = new Rectangle((i%2)*(CAMERA_WIDTH - 400),CAMERA_HEIGHT - (i + 2)*400,400,100,vobm);
 //            platform.setColor(Color.GREEN);
 //            Body platformBody = PhysicsFactory.createBoxBody(mPhysicsWorld,platform, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
 //            platformBody.setUserData("platform"+ i);
@@ -116,36 +121,36 @@ public class GameScene extends BaseScene {
 //            mScene.attachChild(platform);
 //        }
 //
-//        //创建两侧墙壁
-//        final IAreaShape left = new Rectangle(0,0,2,CAMERA_HEIGHT,getVertexBufferObjectManager());
-//        final IAreaShape right = new Rectangle(CAMERA_WIDTH-2,0,2,CAMERA_HEIGHT,getVertexBufferObjectManager());
-//        final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0, 0.5f);
-//        this.leftBody = PhysicsFactory.createBoxBody(mPhysicsWorld, left, BodyDef.BodyType.StaticBody, wallFixtureDef);
-//        this.rightBody = PhysicsFactory.createBoxBody(mPhysicsWorld, right, BodyDef.BodyType.StaticBody, wallFixtureDef);
-//        leftBody.setUserData("left");
-//        rightBody.setUserData("right");
-//        PhysicsConnector leftConnector = new PhysicsConnector(left,leftBody,true,true){
-//            @Override
-//            public void onUpdate(float pSecondsElapsed) {
-//                super.onUpdate(pSecondsElapsed);
-//                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
-//                    leftBody.setTransform(new Vector2(leftBody.getPosition().x,rectBody.getPosition().y),0);
-//                }
-//            }
-//        };
-//        this.mPhysicsWorld.registerPhysicsConnector(leftConnector);
-//        PhysicsConnector rightConnector = new PhysicsConnector(right,rightBody,true,true){
-//            @Override
-//            public void onUpdate(float pSecondsElapsed) {
-//                super.onUpdate(pSecondsElapsed);
-//                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
-//                    rightBody.setTransform(new Vector2(rightBody.getPosition().x,rectBody.getPosition().y),0);
-//                }
-//            }
-//        };
-//        this.mPhysicsWorld.registerPhysicsConnector(rightConnector);
-//        mScene.attachChild(left);
-//        mScene.attachChild(right);
+        //创建两侧墙壁
+        final IAreaShape left = new Rectangle(0,0,2,CAMERA_HEIGHT,vbom);
+        final IAreaShape right = new Rectangle(CAMERA_WIDTH-2,0,2,CAMERA_HEIGHT,vbom);
+        final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0, 0.5f);
+        this.leftBody = PhysicsFactory.createBoxBody(mPhysicsWorld, left, BodyDef.BodyType.StaticBody, wallFixtureDef);
+        this.rightBody = PhysicsFactory.createBoxBody(mPhysicsWorld, right, BodyDef.BodyType.StaticBody, wallFixtureDef);
+        leftBody.setUserData("left");
+        rightBody.setUserData("right");
+        PhysicsConnector leftConnector = new PhysicsConnector(left,leftBody,true,true){
+            @Override
+            public void onUpdate(float pSecondsElapsed) {
+                super.onUpdate(pSecondsElapsed);
+                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
+                    leftBody.setTransform(new Vector2(leftBody.getPosition().x,rectBody.getPosition().y),0);
+                }
+            }
+        };
+        this.mPhysicsWorld.registerPhysicsConnector(leftConnector);
+        PhysicsConnector rightConnector = new PhysicsConnector(right,rightBody,true,true){
+            @Override
+            public void onUpdate(float pSecondsElapsed) {
+                super.onUpdate(pSecondsElapsed);
+                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
+                    rightBody.setTransform(new Vector2(rightBody.getPosition().x,rectBody.getPosition().y),0);
+                }
+            }
+        };
+        this.mPhysicsWorld.registerPhysicsConnector(rightConnector);
+        attachChild(left);
+        attachChild(right);
     }
 
     @Override
@@ -161,5 +166,11 @@ public class GameScene extends BaseScene {
     @Override
     public void disposeScene() {
 
+    }
+
+    public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent)
+    {
+
+        return false;
     }
 }

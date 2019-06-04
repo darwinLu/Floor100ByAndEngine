@@ -1,6 +1,7 @@
 package pers.lx.floor100byandengine.scene;
 
 import android.hardware.SensorManager;
+import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.entity.IEntity;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.Scene;
@@ -25,27 +27,45 @@ import org.andengine.util.color.Color;
 
 import pers.lx.floor100byandengine.GameActivity;
 import pers.lx.floor100byandengine.base.BaseScene;
+import pers.lx.floor100byandengine.manager.PlatformManager;
 import pers.lx.floor100byandengine.manager.ResourcesManager;
 import pers.lx.floor100byandengine.manager.SceneManager;
+import pers.lx.floor100byandengine.object.Floor;
+import pers.lx.floor100byandengine.object.Player;
+import pers.lx.floor100byandengine.object.Wall;
 
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_HEIGHT;
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_WIDTH;
 
 public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
-    private AnimatedSprite mPlayerRun;
-
     private HUD gameHUD;
     private Text scoreText;
     private PhysicsWorld mPhysicsWorld;
 
-    private static final FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(1, 0, 0);
+    public static float HEAD_LINE_PIXEL = CAMERA_HEIGHT / 2;
+    public static float DEAD_LINE_PIXEL = CAMERA_HEIGHT + 50;
+
+    public static final FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(1, 0, 0);
+
+    private Player player;
+    private Floor floor;
+    private Wall leftWall,rightWall;
+    private PlatformManager platformManager;
+
     private Body rectBody;
-    private float headLinePixel = CAMERA_HEIGHT/2;
-    private float deadLinePixel = CAMERA_HEIGHT + 50;
     private Body floorBody;
     private Body leftBody;
     private Body rightBody;
+
+
+
+    public enum Direction
+    {
+        DIRECTION_LEFT,
+        DIRECTION_RIGHT
+    }
+
 
     @Override
     public void createScene() {
@@ -53,6 +73,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
         createHUD();
         createPhysics();
         createLevel();
+        setOnSceneTouchListener(this);
 //        loadLevel(1);
 //        createGameOverText();
 //        levelCompleteWindow = new LevelCompleteWindow(vbom);
@@ -76,38 +97,41 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     }
 
     private void createLevel(){
-        //创建正方体
-        final IAreaShape rect = new Rectangle(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT/2 - 100,200,200,vbom);
-        rect.setColor(Color.RED);
-        this.rectBody = PhysicsFactory.createBoxBody(mPhysicsWorld,rect, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
-        rectBody.setFixedRotation(true);
-        rectBody.setUserData("rect");
-        PhysicsConnector rectConnector = new PhysicsConnector(rect,rectBody,true,true){
-            @Override
-            public void onUpdate(float pSecondsElapsed) {
-                super.onUpdate(pSecondsElapsed);
-                if(rect.getY() + rect.getHeight()/2 < headLinePixel){
-                    camera.setCenter(camera.getCenterX(),rect.getY() + rect.getHeight()/2 );
-                    headLinePixel = rect.getY() + rect.getHeight()/2;
-                    deadLinePixel = rect.getY() + rect.getHeight()/2 + CAMERA_HEIGHT/2 + 50;
-                }
-                if(rect.getY() > deadLinePixel){
-//                    finish();
-                }
-            }
-        };
-        this.mPhysicsWorld.registerPhysicsConnector(rectConnector);
-        attachChild(rect);
+        player = new Player(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT/2 - 100, vbom, camera, mPhysicsWorld);
+        attachChild(player.shape);
+        //创建主角
+//        final IAreaShape rect = new Rectangle(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT/2 - 100,200,200,vbom);
+//        rect.setColor(Color.RED);
+//        this.rectBody = PhysicsFactory.createBoxBody(mPhysicsWorld,rect, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
+//        rectBody.setFixedRotation(true);
+//        rectBody.setUserData("rect");
+//        PhysicsConnector rectConnector = new PhysicsConnector(rect,rectBody,true,true){
+//            @Override
+//            public void onUpdate(float pSecondsElapsed) {
+//                super.onUpdate(pSecondsElapsed);
+//                if(rect.getY() + rect.getHeight()/2 < headLinePixel){
+//                    camera.setCenter(camera.getCenterX(),rect.getY() + rect.getHeight()/2 );
+//                    headLinePixel = rect.getY() + rect.getHeight()/2;
+//                    deadLinePixel = rect.getY() + rect.getHeight()/2 + CAMERA_HEIGHT/2 + 50;
+//                }
+//                if(rect.getY() > deadLinePixel){
+////                    finish();
+//                }
+//            }
+//        };
+//        this.mPhysicsWorld.registerPhysicsConnector(rectConnector);
+//        attachChild(rect);
 //        this.getEngine().getCamera().setChaseEntity(rect);
 
         //创建地面
-        final IAreaShape floor = new Rectangle(0,CAMERA_HEIGHT - 100,CAMERA_WIDTH,100,vbom);
-        floor.setColor(Color.GREEN);
-        this.floorBody = PhysicsFactory.createBoxBody(mPhysicsWorld,floor, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
-//        PhysicsConnector rectConnector = new PhysicsConnector(rect,rectBody,true,true);
-//        this.mPhysicsWorld.registerPhysicsConnector(rectConnector);
-        floorBody.setUserData("floor");
-        attachChild(floor);
+//        final IAreaShape floor = new Rectangle(0,CAMERA_HEIGHT - 100,CAMERA_WIDTH,100,vbom);
+//        floor.setColor(Color.GREEN);
+//        this.floorBody = PhysicsFactory.createBoxBody(mPhysicsWorld,floor, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
+////        PhysicsConnector rectConnector = new PhysicsConnector(rect,rectBody,true,true);
+////        this.mPhysicsWorld.registerPhysicsConnector(rectConnector);
+//        floorBody.setUserData("floor");
+        floor = new Floor(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT/2 - 100, vbom, camera, mPhysicsWorld);
+        attachChild(floor.shape);
 //
 //        //生成多个平台
 //        platformNumber = 10;
@@ -122,35 +146,59 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 //        }
 //
         //创建两侧墙壁
-        final IAreaShape left = new Rectangle(0,0,2,CAMERA_HEIGHT,vbom);
-        final IAreaShape right = new Rectangle(CAMERA_WIDTH-2,0,2,CAMERA_HEIGHT,vbom);
-        final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0, 0.5f);
-        this.leftBody = PhysicsFactory.createBoxBody(mPhysicsWorld, left, BodyDef.BodyType.StaticBody, wallFixtureDef);
-        this.rightBody = PhysicsFactory.createBoxBody(mPhysicsWorld, right, BodyDef.BodyType.StaticBody, wallFixtureDef);
-        leftBody.setUserData("left");
-        rightBody.setUserData("right");
-        PhysicsConnector leftConnector = new PhysicsConnector(left,leftBody,true,true){
+        leftWall = new Wall(0,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld);
+        rightWall = new Wall(CAMERA_WIDTH-2,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld);
+        PhysicsConnector leftConnector = new PhysicsConnector(leftWall.shape,leftWall.body,true,true){
             @Override
             public void onUpdate(float pSecondsElapsed) {
                 super.onUpdate(pSecondsElapsed);
-                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
-                    leftBody.setTransform(new Vector2(leftBody.getPosition().x,rectBody.getPosition().y),0);
+                Log.d("darwin","leftConnector update");
+                if(player.shape.getY() + player.shape.getHeight()/2 < CAMERA_HEIGHT/2){
+                    leftWall.body.setTransform(new Vector2(leftWall.body.getPosition().x,player.body.getPosition().y),0);
                 }
             }
         };
-        this.mPhysicsWorld.registerPhysicsConnector(leftConnector);
-        PhysicsConnector rightConnector = new PhysicsConnector(right,rightBody,true,true){
+        mPhysicsWorld.registerPhysicsConnector(leftConnector);
+        PhysicsConnector rightConnector = new PhysicsConnector(rightWall.shape,rightWall.body,true,true){
             @Override
             public void onUpdate(float pSecondsElapsed) {
                 super.onUpdate(pSecondsElapsed);
-                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
-                    rightBody.setTransform(new Vector2(rightBody.getPosition().x,rectBody.getPosition().y),0);
+                if(player.shape.getY() + player.shape.getHeight()/2 < CAMERA_HEIGHT/2){
+                    rightWall.body.setTransform(new Vector2(rightWall.body.getPosition().x,player.body.getPosition().y),0);
                 }
             }
         };
-        this.mPhysicsWorld.registerPhysicsConnector(rightConnector);
-        attachChild(left);
-        attachChild(right);
+        mPhysicsWorld.registerPhysicsConnector(rightConnector);
+//        final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0, 0.5f);
+//        this.leftBody = PhysicsFactory.createBoxBody(mPhysicsWorld, left, BodyDef.BodyType.StaticBody, wallFixtureDef);
+//        this.rightBody = PhysicsFactory.createBoxBody(mPhysicsWorld, right, BodyDef.BodyType.StaticBody, wallFixtureDef);
+//        leftBody.setUserData("left");
+//        rightBody.setUserData("right");
+//        PhysicsConnector leftConnector = new PhysicsConnector(left,leftBody,true,true){
+//            @Override
+//            public void onUpdate(float pSecondsElapsed) {
+//                super.onUpdate(pSecondsElapsed);
+//                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
+//                    leftBody.setTransform(new Vector2(leftBody.getPosition().x,rectBody.getPosition().y),0);
+//                }
+//            }
+//        };
+//        this.mPhysicsWorld.registerPhysicsConnector(leftConnector);
+//        PhysicsConnector rightConnector = new PhysicsConnector(right,rightBody,true,true){
+//            @Override
+//            public void onUpdate(float pSecondsElapsed) {
+//                super.onUpdate(pSecondsElapsed);
+//                if(rect.getY() + rect.getHeight()/2 < CAMERA_HEIGHT/2){
+//                    rightBody.setTransform(new Vector2(rightBody.getPosition().x,rectBody.getPosition().y),0);
+//                }
+//            }
+//        };
+//        this.mPhysicsWorld.registerPhysicsConnector(rightConnector);
+        attachChild(leftWall.shape);
+        attachChild(rightWall.shape);
+
+        platformManager = PlatformManager.getInstance();
+        platformManager.initPlatform(this,vbom,camera,mPhysicsWorld);
     }
 
     @Override
@@ -168,9 +216,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     }
 
+    @Override
     public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent)
     {
-
+        if(this.mPhysicsWorld != null){
+            if(pSceneTouchEvent.getAction() == TouchEvent.ACTION_DOWN){
+               player.jump();
+            }
+            return true;
+        }
         return false;
     }
 }

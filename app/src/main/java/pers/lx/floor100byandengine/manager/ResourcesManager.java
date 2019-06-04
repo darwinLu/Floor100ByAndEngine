@@ -116,20 +116,20 @@ public class ResourcesManager {
 
     private void loadGameGraphics()
     {
-//        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-//        gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 10240, 10240, TextureOptions.BILINEAR);
-//
-//        player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "robot_run.png", 8, 1);
-//
-//        try
-//        {
-//            this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
-//            this.gameTextureAtlas.load();
-//        }
-//        catch (final ITextureAtlasBuilder.TextureAtlasBuilderException e)
-//        {
-//            Debug.e(e);
-//        }
+        BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
+        gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 10240, 10240, TextureOptions.BILINEAR);
+
+        player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "robot_run.png", 8, 1);
+
+        try
+        {
+            this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
+            this.gameTextureAtlas.load();
+        }
+        catch (final ITextureAtlasBuilder.TextureAtlasBuilderException e)
+        {
+            Debug.e(e);
+        }
     }
 
     private void loadGameFonts()

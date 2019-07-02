@@ -42,7 +42,7 @@ public class GameActivity extends BaseGameActivity {
 
     @Override
     public void onPopulateScene(Scene pScene, OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception {
-        mEngine.registerUpdateHandler(new TimerHandler(2f, new ITimerCallback()
+        mEngine.registerUpdateHandler(new TimerHandler(1f, new ITimerCallback()
         {
             public void onTimePassed(final TimerHandler pTimerHandler)
             {

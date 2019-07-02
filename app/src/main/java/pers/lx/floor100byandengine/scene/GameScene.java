@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.entity.IEntity;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnSceneTouchListener;
@@ -43,8 +44,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     private Text scoreText;
     private PhysicsWorld mPhysicsWorld;
 
-    public static float HEAD_LINE_PIXEL = CAMERA_HEIGHT / 2;
-    public static float DEAD_LINE_PIXEL = CAMERA_HEIGHT + 50;
+    public float headLinePixel = CAMERA_HEIGHT / 2;
+    public float deadLinePixel = CAMERA_HEIGHT + 50;
 
     public static final FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(1, 0, 0);
 
@@ -53,19 +54,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     private Wall leftWall,rightWall;
     private PlatformManager platformManager;
 
-    private Body rectBody;
-    private Body floorBody;
-    private Body leftBody;
-    private Body rightBody;
-
-
-
     public enum Direction
     {
         DIRECTION_LEFT,
         DIRECTION_RIGHT
     }
 
+    private Text gameOverText;
+    private boolean gameOverDisplayed = false;
 
     @Override
     public void createScene() {
@@ -73,6 +69,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
         createHUD();
         createPhysics();
         createLevel();
+        createGameOverText();
         setOnSceneTouchListener(this);
 //        loadLevel(1);
 //        createGameOverText();
@@ -97,7 +94,15 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     }
 
     private void createLevel(){
-        player = new Player(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT/2 - 100, vbom, camera, mPhysicsWorld);
+        player = new Player(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT - 150, vbom, camera, mPhysicsWorld,this){
+            @Override
+            public void gameOver() {
+                if (!gameOverDisplayed)
+                {
+                    displayGameOverText();
+                }
+            }
+        };
         attachChild(player.shape);
         //创建主角
 //        final IAreaShape rect = new Rectangle(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT/2 - 100,200,200,vbom);
@@ -146,8 +151,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 //        }
 //
         //创建两侧墙壁
-        leftWall = new Wall(0,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld);
-        rightWall = new Wall(CAMERA_WIDTH-2,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld);
+        leftWall = new Wall(0,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld,"left");
+        rightWall = new Wall(CAMERA_WIDTH-2,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld,"right");
         PhysicsConnector leftConnector = new PhysicsConnector(leftWall.shape,leftWall.body,true,true){
             @Override
             public void onUpdate(float pSecondsElapsed) {
@@ -199,6 +204,22 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
         platformManager = PlatformManager.getInstance();
         platformManager.initPlatform(this,vbom,camera,mPhysicsWorld);
+
+        this.registerUpdateHandler(new IUpdateHandler() {
+            @Override
+            public void onUpdate(float pSecondsElapsed) {
+                platformManager.checkPlatformIsDead(getScene(),vbom,camera,mPhysicsWorld);
+            }
+
+            @Override
+            public void reset() {
+
+            }
+        });
+    }
+
+    private void createGameOverText() {
+        gameOverText = new Text(0, 0, resourcesManager.font, "Game Over!", vbom);
     }
 
     @Override
@@ -226,5 +247,17 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
             return true;
         }
         return false;
+    }
+
+    private GameScene getScene(){
+        return this;
+    }
+
+    private void displayGameOverText()
+    {
+        camera.setChaseEntity(null);
+        gameOverText.setPosition(camera.getCenterX(), camera.getCenterY());
+        attachChild(gameOverText);
+        gameOverDisplayed = true;
     }
 }

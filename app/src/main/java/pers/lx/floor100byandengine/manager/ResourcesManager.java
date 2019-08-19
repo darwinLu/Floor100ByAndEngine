@@ -52,6 +52,8 @@ public class ResourcesManager {
     private BuildableBitmapTextureAtlas gameTextureAtlas;
     public ITiledTextureRegion player_region;
 
+    public ITiledTextureRegion platform_region;
+
     //---------------------------------------------
     // CLASS LOGIC
     //---------------------------------------------
@@ -120,7 +122,7 @@ public class ResourcesManager {
         gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 10240, 10240, TextureOptions.BILINEAR);
 
         player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "robot_run.png", 8, 1);
-
+        platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas,activity,"platform.png",1,1);
         try
         {
             this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));

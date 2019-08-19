@@ -6,7 +6,11 @@ import android.util.Log;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.HUD;
@@ -32,7 +36,9 @@ import pers.lx.floor100byandengine.manager.PlatformManager;
 import pers.lx.floor100byandengine.manager.ResourcesManager;
 import pers.lx.floor100byandengine.manager.SceneManager;
 import pers.lx.floor100byandengine.object.Floor;
+import pers.lx.floor100byandengine.object.Platform;
 import pers.lx.floor100byandengine.object.Player;
+import pers.lx.floor100byandengine.object.UserData;
 import pers.lx.floor100byandengine.object.Wall;
 
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_HEIGHT;
@@ -215,7 +221,156 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
             public void reset() {
 
             }
+
         });
+//
+//        //注册碰撞检测
+//        this.mPhysicsWorld.setContactListener(new ContactListener() {
+//            @Override
+//            public void beginContact(Contact contact) {
+//                Body bodyA = contact.getFixtureA().getBody();
+//                Body bodyB = contact.getFixtureB().getBody();
+//
+//
+//            }
+//
+//            @Override
+//            public void endContact(Contact contact) {
+//                Body bodyA = contact.getFixtureA().getBody();
+//                Body bodyB = contact.getFixtureB().getBody();
+//
+////                if(idA.equals("player") && idB.equals("lrPlatform")) {
+////                    onLrPlatform = false;
+////                    if(lrDirection.equals("left")){
+////                        rectBody.applyLinearImpulse(new Vector2(-30,0),rectBody.getWorldCenter());
+////                    }
+////                    else{
+////                        rectBody.applyLinearImpulse(new Vector2(30,0),rectBody.getWorldCenter());
+////                    }
+////                    speedChanged = false;
+//////                    allowRoll = true;
+//////                    rectBody.applyLinearImpulse(new Vector2(-200,0),rectBody.getWorldCenter());
+////                }
+////                if(idA.equals("rect") && idB.equals("rollPlatform")) {
+////                    onRollPlatform = false;
+////                    if(direction.equals("left")){
+////                        rectBody.applyLinearImpulse(new Vector2(-100,0),rectBody.getWorldCenter());
+////                    }
+////                    else{
+////                        rectBody.applyLinearImpulse(new Vector2(-100,0),rectBody.getWorldCenter());
+////                    }
+////                    speedChanged = false;
+//////                    allowRoll = true;
+//////                    rectBody.applyLinearImpulse(new Vector2(-200,0),rectBody.getWorldCenter());
+////                }
+////                if(idA.equals("rect") && idB.equals("springPlatform")) {
+////                    onSpringPlatform = false;
+//////                    rectBody.applyLinearImpulse(new Vector2(600, 0), rectBody.getLocalCenter());
+////                }
+//////                if(idA.equals("rect") && idB.equals("right")){
+//////                    touchWall = false;
+////////                    rectBody.applyLinearImpulse(new Vector2(-600,0),rectBody.getLocalCenter());
+//////                }
+//////                if(idA.equals("rect") && idB.equals("left")) {
+//////                    touchWall = false;
+////////                    rectBody.applyLinearImpulse(new Vector2(600, 0), rectBody.getLocalCenter());
+//////                }
+//            }
+//
+//            //实现单向平台
+//            @Override
+//            public void preSolve(Contact contact, Manifold oldManifold) {
+//                Body bodyA = contact.getFixtureA().getBody();
+//                Body bodyB = contact.getFixtureB().getBody();
+//                UserData userDataA = (UserData)bodyA.getUserData();
+//                UserData userDataB = (UserData)bodyB.getUserData();
+//
+//                if(userDataA.type.equals("player") && userDataB.type.equals("platform")){
+//                    if(((Player)userDataA.object).getY() + ((Player)userDataA.object).getHeight()  > ((Platform)userDataB.object).getY()){
+//                        contact.setEnabled(false);
+//                    }
+//                }
+////                if(idA.equals("rect") && idB.equals("platform3")){
+////                    if(rect.getY() + rect.getHeight()  > platform3.getY()){
+////                        contact.setEnabled(false);
+////                    }
+////                }
+////                if(idA.equals("rect") && idB.equals("udPlatform")){
+////                    if(rect.getY() + rect.getHeight()  > udPlatform.getY()){
+////                        contact.setEnabled(false);
+////                    }
+////                }
+////                if(idA.equals("rect") && idB.equals("lrPlatform")){
+////                    if(rect.getY() + rect.getHeight()  > lrPlatform.getY()){
+////                        contact.setEnabled(false);
+////                        onLrPlatform = false;
+////                    }
+////                    else{
+////                        onLrPlatform = true;
+////                        if(!speedChanged){
+////                            if(lrDirection.equals("left")){
+////                                rectBody.applyLinearImpulse(new Vector2(30,0),rectBody.getWorldCenter());
+////                            }
+////                            else{
+////                                rectBody.applyLinearImpulse(new Vector2(-30,0),rectBody.getWorldCenter());
+////                            }
+////                            speedChanged = true;
+////                        }
+//////                        if(touchWall){
+//////                            rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+//////                            touchWall = false;
+//////                        }
+////                    }
+////                }
+////                if(idA.equals("rect") && idB.equals("rollPlatform")){
+////                    if(rect.getY() + rect.getHeight()  > rollPlatform.getY()){
+////                        contact.setEnabled(false);
+////                        onRollPlatform = false;
+////                    }
+////                    else{
+////                        onRollPlatform = true;
+////                        if(!speedChanged){
+////                            if(direction.equals("left")){
+////                                rectBody.applyLinearImpulse(new Vector2(100,0),rectBody.getWorldCenter());
+////                            }
+////                            else{
+////                                rectBody.applyLinearImpulse(new Vector2(100,0),rectBody.getWorldCenter());
+////                            }
+////                            speedChanged = true;
+////                        }
+//////                        if(touchWall){
+//////                            rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+//////                            touchWall = false;
+//////                        }
+////                    }
+//////                    else{
+//////                        if(rectBody.getLinearVelocity().y < 0 ){
+//////                            contact.setEnabled(false);
+//////                        }
+//////                        else{
+//////                            if(allowRoll){
+//////                                rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+//////                                allowRoll = false;
+//////                            }
+//////                        }
+//////                    }
+////                }
+////                if(idA.equals("rect") && idB.equals("springPlatform")){
+////                    if(rect.getY() + rect.getHeight()  > springPlatform.getY()){
+////                        contact.setEnabled(false);
+////                        onSpringPlatform = false;
+////                    }
+////                }
+//            }
+//
+//            @Override
+//            public void postSolve(Contact contact, ContactImpulse impulse) {
+//
+//            }
+//        });
+//
+//        //世界注册到场景
+//        this.registerUpdateHandler(this.mPhysicsWorld);
     }
 
     private void createGameOverText() {

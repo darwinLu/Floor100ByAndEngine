@@ -23,16 +23,16 @@ public class Wall {
     public Body body;
     public IAreaShape shape;
 
-    public Wall(float pX, float pY, float pWidth,float pHeight,VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld,String userData)
+    public Wall(float pX, float pY, float pWidth,float pHeight,VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld,String type)
     {
-        createPhysics(pX,pY,pWidth,pHeight,camera, physicsWorld,vbom,userData);
+        createPhysics(pX,pY,pWidth,pHeight,camera, physicsWorld,vbom,type);
     }
 
-    private void createPhysics(float pX, float pY, float pWidth,float pHeight,Camera camera, PhysicsWorld physicsWorld, VertexBufferObjectManager vbom,String userData) {
+    private void createPhysics(float pX, float pY, float pWidth,float pHeight,Camera camera, PhysicsWorld physicsWorld, VertexBufferObjectManager vbom,String type) {
         shape = new Rectangle(pX,pY,pWidth,pHeight,vbom);
         final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0, 0.5f);
         body = PhysicsFactory.createBoxBody(physicsWorld, shape, BodyDef.BodyType.StaticBody, wallFixtureDef);
-        body.setUserData(userData);
+        body.setUserData(new UserData(type,this));
 //        PhysicsConnector connector = new PhysicsConnector(shape,body,true,true){
 //            @Override
 //            public void onUpdate(float pSecondsElapsed) {

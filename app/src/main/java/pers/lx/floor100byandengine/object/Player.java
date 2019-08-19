@@ -69,7 +69,7 @@ public abstract class Player extends AnimatedSprite {
         shape.setColor(Color.RED);
         body = PhysicsFactory.createBoxBody(physicsWorld,shape, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
         body.setFixedRotation(true);
-        body.setUserData("player");
+        body.setUserData(new UserData("player",this));
         PhysicsConnector rectConnector = new PhysicsConnector(shape,body,true,true){
             @Override
             public void onUpdate(float pSecondsElapsed) {
@@ -91,21 +91,21 @@ public abstract class Player extends AnimatedSprite {
             public void beginContact(Contact contact) {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
-                String idA = (String)bodyA.getUserData();
-                String idB = (String)bodyB.getUserData();
-                if(idA.equals("player") && idB.equals("floor")){
+                UserData userDataA = (UserData)bodyA.getUserData();
+                UserData userDataB = (UserData)bodyB.getUserData();
+                if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
                     onGround = true;
                     if(!running){
                         body.applyLinearImpulse(new Vector2(10,0),body.getWorldCenter());
                         running = true;
                     }
                 }
-                if(idA.equals("player") && idB.equals("right")){
+                if(userDataA.type.equals("player") && userDataB.type.equals("right")){
                     direction = GameScene.Direction.DIRECTION_LEFT;
                     body.setLinearVelocity(new Vector2(0,body.getLinearVelocity().y));
                     body.applyLinearImpulse(new Vector2(-10,0),body.getWorldCenter());
                 }
-                if(idA.equals("player") && idB.equals("left")) {
+                if(userDataA.type.equals("player") && userDataB.type.equals("left")) {
                     direction = GameScene.Direction.DIRECTION_RIGHT;
                     body.setLinearVelocity(new Vector2(0,body.getLinearVelocity().y));
                     body.applyLinearImpulse(new Vector2(10,0),body.getWorldCenter());
@@ -117,10 +117,13 @@ public abstract class Player extends AnimatedSprite {
             public void preSolve(Contact contact, Manifold oldManifold) {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
-                String idA = (String)bodyA.getUserData();
-                String idB = (String)bodyB.getUserData();
-                if(idA.equals("player") && idB.equals("platform")){
-                    if(shape.getY() + shape.getHeight()  > ){
+                UserData userDataA = (UserData)bodyA.getUserData();
+                UserData userDataB = (UserData)bodyB.getUserData();
+                if(userDataA.type.equals("player") && userDataB.type.equals("platform")){
+                    if(((Player)userDataA.object).shape.getY() + ((Player)userDataA.object).shape.getHeight()  > ((Platform)userDataB.object).shape.getY()){
+                        Log.d("darwin",String.valueOf(((Player)userDataA.object).getY()));
+                        Log.d("darwin",String.valueOf(((Player)userDataA.object).getHeight()));
+                        Log.d("darwin",String.valueOf(((Platform)userDataB.object).getY()));
                         contact.setEnabled(false);
                     }
                 }
@@ -135,9 +138,9 @@ public abstract class Player extends AnimatedSprite {
             public void endContact(Contact contact) {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
-                String idA = (String)bodyA.getUserData();
-                String idB = (String)bodyB.getUserData();
-                if(idA.equals("player") && idB.equals("floor")){
+                UserData userDataA = (UserData)bodyA.getUserData();
+                UserData userDataB = (UserData)bodyB.getUserData();
+                if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
                     shape.setColor(Color.WHITE);
                 }
             }

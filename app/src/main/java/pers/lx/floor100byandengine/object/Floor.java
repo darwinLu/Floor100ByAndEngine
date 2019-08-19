@@ -37,6 +37,6 @@ public class Floor {
         body = PhysicsFactory.createBoxBody(physicsWorld,shape, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
 //        PhysicsConnector rectConnector = new PhysicsConnector(rect,rectBody,true,true);
 //        this.mPhysicsWorld.registerPhysicsConnector(rectConnector);
-        body.setUserData("floor");
+        body.setUserData(new UserData("floor",this));
     }
 }

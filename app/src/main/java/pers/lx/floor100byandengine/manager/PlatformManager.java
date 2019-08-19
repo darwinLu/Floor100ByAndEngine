@@ -1,5 +1,6 @@
 package pers.lx.floor100byandengine.manager;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 
@@ -15,6 +16,7 @@ import org.andengine.util.color.Color;
 import java.util.LinkedList;
 import java.util.Random;
 
+import pers.lx.floor100byandengine.object.Platform;
 import pers.lx.floor100byandengine.object.Player;
 import pers.lx.floor100byandengine.scene.GameScene;
 
@@ -37,31 +39,47 @@ public class PlatformManager {
 
     public void initPlatform(GameScene gameScene,VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld){
         for(int i=0;i<platformCount;i++){
-            IAreaShape platform = new Rectangle(CAMERA_WIDTH / 10 * rand.nextInt(10),CAMERA_HEIGHT - (i + 2)*200,160,30,vbom);
-            platform.setColor(Color.GREEN);
-            Body platformBody = PhysicsFactory.createBoxBody(physicsWorld,platform, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
-            platformBody.setUserData("platform"+ i);
-            platform.setUserData(platformBody);
-            platformShapeList.add(platform);
-            platformBodyList.add(platformBody);
-            gameScene.attachChild(platform);
+            Platform platform = new Platform("udPlatform",rand,CAMERA_HEIGHT - (i + 2)*200,vbom,physicsWorld,camera,gameScene);
+//            IAreaShape platform = new Rectangle(CAMERA_WIDTH / 10 * rand.nextInt(10),CAMERA_HEIGHT - (i + 2)*200,160,30,vbom);
+//            platform.setColor(Color.GREEN);
+//            Body platformBody = PhysicsFactory.createBoxBody(physicsWorld,platform, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
+//            platformBody.setUserData("platform"+ i);
+//            platform.setUserData(platformBody);
+//            platformShapeList.add(platform);
+//            platformBodyList.add(platformBody);
+//            gameScene.attachChild(platform);
+            platformShapeList.add(platform.shape);
+            platformBodyList.add(platform.body);
+            gameScene.attachChild(platform.shape);
         }
+//        Platform platform1 = new Platform("platform",rand,CAMERA_HEIGHT - (0 + 2)*200,vbom,physicsWorld,camera,gameScene);
+//        platformShapeList.add(platform1.shape);
+//        platformBodyList.add(platform1.body);
+//        gameScene.attachChild(platform1.shape);
+//        Platform platform2 = new Platform("lrPlatform",rand,CAMERA_HEIGHT - (1 + 2)*200,vbom,physicsWorld);
+//        platformShapeList.add(platform2.shape);
+//        platformBodyList.add(platform2.body);
+//        gameScene.attachChild(platform2.shape);
     }
 
     public void addPlatformToLast(GameScene gameScene,VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld){
-            float lastHeight = platformShapeList.getLast().getY();
-            IAreaShape platform = new Rectangle(CAMERA_WIDTH / 10 * rand.nextInt(10),lastHeight - 200,160,30,vbom);
-            platform.setColor(Color.PINK);
-            Body platformBody = PhysicsFactory.createBoxBody(physicsWorld,platform, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
-            platformBody.setUserData("platform");
-            platform.setUserData(platformBody);
-            platformShapeList.add(platform);
-            platformBodyList.add(platformBody);
-            gameScene.attachChild(platform);
+        float lastHeight = platformShapeList.getLast().getY();
+        Platform platform = new Platform("lrPlatform",rand, (int) (lastHeight - 200),vbom,physicsWorld,camera,gameScene);
+//            IAreaShape platform = new Rectangle(CAMERA_WIDTH / 10 * rand.nextInt(10),lastHeight - 200,160,30,vbom);
+//            platform.setColor(Color.PINK);
+//            Body platformBody = PhysicsFactory.createBoxBody(physicsWorld,platform, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
+//            platformBody.setUserData("platform");
+//            platform.setUserData(platformBody);
+//            platformShapeList.add(platform);
+//            platformBodyList.add(platformBody);
+//            gameScene.attachChild(platform);
+        platformShapeList.add(platform.shape);
+        platformBodyList.add(platform.body);
+        gameScene.attachChild(platform.shape);
     }
 
     public void removePlatformFromFirst(GameScene gameScene,VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld){
-        physicsWorld.destroyBody((Body)platformShapeList.getFirst().getUserData());
+//        physicsWorld.destroyBody((Body)platformShapeList.getFirst().getUserData());
         platformShapeList.removeFirst();
         platformBodyList.removeFirst();
     }

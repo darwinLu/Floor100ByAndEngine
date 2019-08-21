@@ -28,98 +28,30 @@ import static pers.lx.floor100byandengine.GameActivity.CAMERA_HEIGHT;
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_WIDTH;
 import static pers.lx.floor100byandengine.scene.GameScene.FIXTURE_DEF;
 
-public class Platform extends Entity {
+public abstract class Platform extends Entity {
+
+    public String entityType = "platform";
+    public String platformType;
+    public String direction;
+    public String effectForce;
+
+    public int width = 160;
+    public int height = 30;
 
     public IAreaShape shape;
     public Body body;
-    public String type = "";
-    private Color color;
 
-    private String lrDirection = "right";
-    private String udDirection = "up";
+    //For Test
+    public Color color;
 
-    public Platform(String typeString, Random rand, int y, VertexBufferObjectManager vbom, PhysicsWorld physicsWorld,Camera camera,GameScene gameScene){
-        createPhysics(typeString, rand, y,camera, physicsWorld,vbom,gameScene);
-
+    public Platform(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom){
+        createPhysics(x, y, physicsWorld, camera, gameScene, vbom);
     }
 
-    // ---------------------------------------------
-    // CLASS LOGIC
-    // ---------------------------------------------
+    protected abstract void createPhysics( int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom);
 
-    private void createPhysics(String typeString, Random rand, int y,final Camera camera, PhysicsWorld physicsWorld, VertexBufferObjectManager vbom, final GameScene gameScene){
-        //super(CAMERA_WIDTH / 10 * rand.nextInt(10),y,160,30, ResourcesManager.getInstance().platform_region,vbom);
-        shape = new Rectangle(CAMERA_WIDTH / 10 * rand.nextInt(10),y,160,30,vbom);
-        body = PhysicsFactory.createBoxBody(physicsWorld,shape, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
-        body.setUserData(new UserData("platform",this));
-        type = typeString;
-        if(type.equals("lrPlatform")){
-            shape.setColor(Color.GREEN);
-        }
-        if(type.equals("udPlatform")){
-            shape.setColor(Color.PINK);
-        }
-        shape.setUserData(body);
-        PhysicsConnector platformConnector = new PhysicsConnector(shape,body,true,true){
-            @Override
-            public void onUpdate(float pSecondsElapsed) {
-                super.onUpdate(pSecondsElapsed);
-                String flag;
-                if(type.equals("lrPlatform")){
-                    //左右平台移动
-                    flag = "lr";
-                    if(lrDirection.equals("right")){
-                        body.setLinearVelocity(new Vector2(5,0));
-                    }
-                    if(lrDirection.equals("left")){
-                        body.setLinearVelocity(new Vector2(-5,0));
-                    }
-                    if(body.getWorldCenter().x>15){
-                        lrDirection = "left";
-                    }
-                    if(body.getWorldCenter().x<0){
-                        lrDirection = "right";
-                    }
-                }
-                if(type.equals("udPlatform")){
-                    //上下平台移动
-                    flag = "ud";
-                    if(udDirection.equals("up")){
-                        body.setLinearVelocity(new Vector2(0,-1));
-                    }
-                    if(udDirection.equals("down")){
-                        body.setLinearVelocity(new Vector2(0,1));
-                    }
-                    if(body.getWorldCenter().y > 20){
-                        udDirection = "up";
-                    }
-                    if(body.getWorldCenter().y <10){
-                        udDirection = "down";
-                    }
-                }
+    protected abstract void doEffectToPlayer(Player player);
 
-            }
-        };
-        physicsWorld.registerPhysicsConnector(platformConnector);
-    }
-//    @Override
-//    protected void onManagedUpdate(float pSecondsElapsed) {
-//        super.onManagedUpdate(pSecondsElapsed);
-//        if(this.type.equals("lrPlatform")){
-//            //左右平台移动
-//            if(lrDirection.equals("right")){
-//                body.setLinearVelocity(new Vector2(5,0));
-//            }
-//            if(lrDirection.equals("left")){
-//                body.setLinearVelocity(new Vector2(-5,0));
-//            }
-//            if(body.getWorldCenter().x>15){
-//                lrDirection = "left";
-//            }
-//            if(body.getWorldCenter().x<0){
-//                lrDirection = "right";
-//            }
-//        }
-//
-//    }
+    protected abstract void clearEffectToPlayer(Player player);
+
 }

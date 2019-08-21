@@ -42,6 +42,11 @@ public abstract class Player extends AnimatedSprite {
     public boolean onGround = false;
     public boolean jumping;
     public boolean running = false;
+    private boolean onLrPlatform = false;
+    public boolean speedChanged = false;
+    private boolean onPlatform = false;
+
+    private Platform currentPlatform;
 
     // ---------------------------------------------
     // CONSTRUCTOR
@@ -117,16 +122,80 @@ public abstract class Player extends AnimatedSprite {
             public void preSolve(Contact contact, Manifold oldManifold) {
                 Body bodyA = contact.getFixtureA().getBody();
                 Body bodyB = contact.getFixtureB().getBody();
-                UserData userDataA = (UserData)bodyA.getUserData();
-                UserData userDataB = (UserData)bodyB.getUserData();
-                if(userDataA.type.equals("player") && userDataB.type.equals("platform")){
-                    if(((Player)userDataA.object).shape.getY() + ((Player)userDataA.object).shape.getHeight()  > ((Platform)userDataB.object).shape.getY()){
-                        Log.d("darwin",String.valueOf(((Player)userDataA.object).getY()));
-                        Log.d("darwin",String.valueOf(((Player)userDataA.object).getHeight()));
-                        Log.d("darwin",String.valueOf(((Platform)userDataB.object).getY()));
+                UserData userDataA = (UserData) bodyA.getUserData();
+                UserData userDataB = (UserData) bodyB.getUserData();
+                if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
+                    if (((Player) userDataA.object).shape.getY() + ((Player) userDataA.object).shape.getHeight() > ((Platform) userDataB.object).shape.getY()) {
+//                        Log.d("darwin", String.valueOf(((Player) userDataA.object).getY()));
+//                        Log.d("darwin", String.valueOf(((Player) userDataA.object).getHeight()));
+//                        Log.d("darwin", String.valueOf(((Platform) userDataB.object).getY()));
                         contact.setEnabled(false);
+                    } else {
+                        onPlatform = true;
+                        currentPlatform = (Platform)(userDataB.object);
+                        ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
+//                        if (((Platform) userDataB.object).platformType.equals("lr")) {
+////                            if(((Player)userDataA.object).shape.getY() + ((Player)userDataA.object).shape.getHeight()  > ((Platform)userDataB.object).shape.getY()){
+////                                contact.setEnabled(false);
+////                                onLrPlatform = false;
+////                            }
+////                            else{
+//                            onLrPlatform = true;
+//                            if (!speedChanged) {
+//                                if (((Platform) userDataB.object).direction.equals("left")) {
+//                                    bodyA.applyLinearImpulse(new Vector2(30, 0), bodyA.getWorldCenter());
+//                                } else {
+//                                    bodyA.applyLinearImpulse(new Vector2(-30, 0), bodyA.getWorldCenter());
+//                                }
+//                                speedChanged = true;
+//                            }
+////                        if(touchWall){
+////                            rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+////                            touchWall = false;
+////                        }
+//                        }
                     }
                 }
+
+//                if(idA.equals("rect") && idB.equals("rollPlatform")){
+//                    if(rect.getY() + rect.getHeight()  > rollPlatform.getY()){
+//                        contact.setEnabled(false);
+//                        onRollPlatform = false;
+//                    }
+//                    else{
+//                        onRollPlatform = true;
+//                        if(!speedChanged){
+//                            if(direction.equals("left")){
+//                                rectBody.applyLinearImpulse(new Vector2(100,0),rectBody.getWorldCenter());
+//                            }
+//                            else{
+//                                rectBody.applyLinearImpulse(new Vector2(100,0),rectBody.getWorldCenter());
+//                            }
+//                            speedChanged = true;
+//                        }
+////                        if(touchWall){
+////                            rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+////                            touchWall = false;
+////                        }
+//                    }
+////                    else{
+////                        if(rectBody.getLinearVelocity().y < 0 ){
+////                            contact.setEnabled(false);
+////                        }
+////                        else{
+////                            if(allowRoll){
+////                                rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+////                                allowRoll = false;
+////                            }
+////                        }
+////                    }
+//                }
+//                if(idA.equals("rect") && idB.equals("springPlatform")){
+//                    if(rect.getY() + rect.getHeight()  > springPlatform.getY()){
+//                        contact.setEnabled(false);
+//                        onSpringPlatform = false;
+//                    }
+//                }
             }
 
             @Override
@@ -143,6 +212,13 @@ public abstract class Player extends AnimatedSprite {
                 if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
                     shape.setColor(Color.WHITE);
                 }
+                if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
+                    if(onPlatform){
+                        ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
+                        onPlatform = false;
+                        speedChanged = false;
+                    }
+                }
             }
         });
     }
@@ -151,6 +227,11 @@ public abstract class Player extends AnimatedSprite {
 
     public void jump(){
         body.applyLinearImpulse(new Vector2(0,-40),body.getLocalCenter());
+        if(onPlatform){
+            if(currentPlatform.platformType.equals("spring")){
+                body.applyLinearImpulse(new Vector2(0, -100), body.getWorldCenter());
+            }
+        }
     }
 
 }

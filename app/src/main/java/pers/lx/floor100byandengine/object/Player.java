@@ -42,6 +42,7 @@ public abstract class Player extends AnimatedSprite {
     public boolean onGround = false;
     public boolean jumping;
     public boolean running = false;
+    public boolean animating = false;
     private boolean onLrPlatform = false;
     public boolean speedChanged = false;
     private boolean onPlatform = false;
@@ -70,21 +71,21 @@ public abstract class Player extends AnimatedSprite {
     // ---------------------------------------------
 
     private void createPhysics(final Camera camera, PhysicsWorld physicsWorld,VertexBufferObjectManager vbom,final GameScene gameScene){
-        shape = new Rectangle(mX, mY,50,50,vbom);
-        shape.setColor(Color.RED);
-        body = PhysicsFactory.createBoxBody(physicsWorld,shape, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
+//        shape = new Rectangle(mX, mY,50,50,vbom);
+//        shape.setColor(Color.RED);
+        body = PhysicsFactory.createBoxBody(physicsWorld,this, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
         body.setFixedRotation(true);
         body.setUserData(new UserData("player",this));
-        PhysicsConnector rectConnector = new PhysicsConnector(shape,body,true,true){
+        PhysicsConnector rectConnector = new PhysicsConnector(this,body,true,true){
             @Override
             public void onUpdate(float pSecondsElapsed) {
                 super.onUpdate(pSecondsElapsed);
-                if(shape.getY() + shape.getHeight()/2 < gameScene.headLinePixel){
-                    camera.setCenter(camera.getCenterX(),shape.getY() + shape.getHeight()/2 );
-                    gameScene.headLinePixel = shape.getY() + shape.getHeight()/2;
-                    gameScene.deadLinePixel = shape.getY() + shape.getHeight()/2 + CAMERA_HEIGHT/2 + 50;
+                if(this.getShape().getY() + getTiledTextureRegion().getHeight(0)/2 < gameScene.headLinePixel){
+                    camera.setCenter(camera.getCenterX(),this.getShape().getY() + getTiledTextureRegion().getHeight(0)/2 );
+                    gameScene.headLinePixel = this.getShape().getY() + getTiledTextureRegion().getHeight(0)/2;
+                    gameScene.deadLinePixel = this.getShape().getY() + getTiledTextureRegion().getHeight(0)/2 + CAMERA_HEIGHT/2 + 50;
                 }
-                if(shape.getY() > gameScene.deadLinePixel){
+                if(this.getShape().getY() > gameScene.deadLinePixel){
                     gameOver();
                 }
             }
@@ -101,19 +102,19 @@ public abstract class Player extends AnimatedSprite {
                 if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
                     onGround = true;
                     if(!running){
-                        body.applyLinearImpulse(new Vector2(10,0),body.getWorldCenter());
+                        body.applyLinearImpulse(new Vector2(30,0),body.getWorldCenter());
                         running = true;
                     }
                 }
                 if(userDataA.type.equals("player") && userDataB.type.equals("right")){
                     direction = GameScene.Direction.DIRECTION_LEFT;
                     body.setLinearVelocity(new Vector2(0,body.getLinearVelocity().y));
-                    body.applyLinearImpulse(new Vector2(-10,0),body.getWorldCenter());
+                    body.applyLinearImpulse(new Vector2(-30,0),body.getWorldCenter());
                 }
                 if(userDataA.type.equals("player") && userDataB.type.equals("left")) {
                     direction = GameScene.Direction.DIRECTION_RIGHT;
                     body.setLinearVelocity(new Vector2(0,body.getLinearVelocity().y));
-                    body.applyLinearImpulse(new Vector2(10,0),body.getWorldCenter());
+                    body.applyLinearImpulse(new Vector2(30,0),body.getWorldCenter());
                 }
             }
 
@@ -125,7 +126,7 @@ public abstract class Player extends AnimatedSprite {
                 UserData userDataA = (UserData) bodyA.getUserData();
                 UserData userDataB = (UserData) bodyB.getUserData();
                 if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
-                    if (((Player) userDataA.object).shape.getY() + ((Player) userDataA.object).shape.getHeight() > ((Platform) userDataB.object).shape.getY()) {
+                    if (((Player) userDataA.object).getY() + ((Player) userDataA.object).getTiledTextureRegion().getHeight(0) > ((Platform) userDataB.object).getY()) {
 //                        Log.d("darwin", String.valueOf(((Player) userDataA.object).getY()));
 //                        Log.d("darwin", String.valueOf(((Player) userDataA.object).getHeight()));
 //                        Log.d("darwin", String.valueOf(((Platform) userDataB.object).getY()));
@@ -209,9 +210,9 @@ public abstract class Player extends AnimatedSprite {
                 Body bodyB = contact.getFixtureB().getBody();
                 UserData userDataA = (UserData)bodyA.getUserData();
                 UserData userDataB = (UserData)bodyB.getUserData();
-                if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
-                    shape.setColor(Color.WHITE);
-                }
+//                if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
+//                    shape.setColor(Color.WHITE);
+//                }
                 if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
                     if(onPlatform){
                         ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
@@ -223,6 +224,160 @@ public abstract class Player extends AnimatedSprite {
         });
     }
 
+//    private void createPhysics(final Camera camera, PhysicsWorld physicsWorld,VertexBufferObjectManager vbom,final GameScene gameScene){
+//        shape = new Rectangle(mX, mY,50,50,vbom);
+//        shape.setColor(Color.RED);
+//        body = PhysicsFactory.createBoxBody(physicsWorld,shape, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
+//        body.setFixedRotation(true);
+//        body.setUserData(new UserData("player",this));
+//        PhysicsConnector rectConnector = new PhysicsConnector(shape,body,true,true){
+//            @Override
+//            public void onUpdate(float pSecondsElapsed) {
+//                super.onUpdate(pSecondsElapsed);
+//                if(shape.getY() + shape.getHeight()/2 < gameScene.headLinePixel){
+//                    camera.setCenter(camera.getCenterX(),shape.getY() + shape.getHeight()/2 );
+//                    gameScene.headLinePixel = shape.getY() + shape.getHeight()/2;
+//                    gameScene.deadLinePixel = shape.getY() + shape.getHeight()/2 + CAMERA_HEIGHT/2 + 50;
+//                }
+//                if(shape.getY() > gameScene.deadLinePixel){
+//                    gameOver();
+//                }
+//            }
+//        };
+//        physicsWorld.registerPhysicsConnector(rectConnector);
+//        //注册碰撞检测
+//        physicsWorld.setContactListener(new ContactListener() {
+//            @Override
+//            public void beginContact(Contact contact) {
+//                Body bodyA = contact.getFixtureA().getBody();
+//                Body bodyB = contact.getFixtureB().getBody();
+//                UserData userDataA = (UserData)bodyA.getUserData();
+//                UserData userDataB = (UserData)bodyB.getUserData();
+//                if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
+//                    onGround = true;
+//                    if(!running){
+//                        body.applyLinearImpulse(new Vector2(10,0),body.getWorldCenter());
+//                        running = true;
+//                    }
+//                }
+//                if(userDataA.type.equals("player") && userDataB.type.equals("right")){
+//                    direction = GameScene.Direction.DIRECTION_LEFT;
+//                    body.setLinearVelocity(new Vector2(0,body.getLinearVelocity().y));
+//                    body.applyLinearImpulse(new Vector2(-10,0),body.getWorldCenter());
+//                }
+//                if(userDataA.type.equals("player") && userDataB.type.equals("left")) {
+//                    direction = GameScene.Direction.DIRECTION_RIGHT;
+//                    body.setLinearVelocity(new Vector2(0,body.getLinearVelocity().y));
+//                    body.applyLinearImpulse(new Vector2(10,0),body.getWorldCenter());
+//                }
+//            }
+//
+//            //实现单向平台
+//            @Override
+//            public void preSolve(Contact contact, Manifold oldManifold) {
+//                Body bodyA = contact.getFixtureA().getBody();
+//                Body bodyB = contact.getFixtureB().getBody();
+//                UserData userDataA = (UserData) bodyA.getUserData();
+//                UserData userDataB = (UserData) bodyB.getUserData();
+//                if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
+//                    if (((Player) userDataA.object).shape.getY() + ((Player) userDataA.object).shape.getHeight() > ((Platform) userDataB.object).shape.getY()) {
+////                        Log.d("darwin", String.valueOf(((Player) userDataA.object).getY()));
+////                        Log.d("darwin", String.valueOf(((Player) userDataA.object).getHeight()));
+////                        Log.d("darwin", String.valueOf(((Platform) userDataB.object).getY()));
+//                        contact.setEnabled(false);
+//                    } else {
+//                        onPlatform = true;
+//                        currentPlatform = (Platform)(userDataB.object);
+//                        ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
+////                        if (((Platform) userDataB.object).platformType.equals("lr")) {
+//////                            if(((Player)userDataA.object).shape.getY() + ((Player)userDataA.object).shape.getHeight()  > ((Platform)userDataB.object).shape.getY()){
+//////                                contact.setEnabled(false);
+//////                                onLrPlatform = false;
+//////                            }
+//////                            else{
+////                            onLrPlatform = true;
+////                            if (!speedChanged) {
+////                                if (((Platform) userDataB.object).direction.equals("left")) {
+////                                    bodyA.applyLinearImpulse(new Vector2(30, 0), bodyA.getWorldCenter());
+////                                } else {
+////                                    bodyA.applyLinearImpulse(new Vector2(-30, 0), bodyA.getWorldCenter());
+////                                }
+////                                speedChanged = true;
+////                            }
+//////                        if(touchWall){
+//////                            rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+//////                            touchWall = false;
+//////                        }
+////                        }
+//                    }
+//                }
+//
+////                if(idA.equals("rect") && idB.equals("rollPlatform")){
+////                    if(rect.getY() + rect.getHeight()  > rollPlatform.getY()){
+////                        contact.setEnabled(false);
+////                        onRollPlatform = false;
+////                    }
+////                    else{
+////                        onRollPlatform = true;
+////                        if(!speedChanged){
+////                            if(direction.equals("left")){
+////                                rectBody.applyLinearImpulse(new Vector2(100,0),rectBody.getWorldCenter());
+////                            }
+////                            else{
+////                                rectBody.applyLinearImpulse(new Vector2(100,0),rectBody.getWorldCenter());
+////                            }
+////                            speedChanged = true;
+////                        }
+//////                        if(touchWall){
+//////                            rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+//////                            touchWall = false;
+//////                        }
+////                    }
+//////                    else{
+//////                        if(rectBody.getLinearVelocity().y < 0 ){
+//////                            contact.setEnabled(false);
+//////                        }
+//////                        else{
+//////                            if(allowRoll){
+//////                                rectBody.applyLinearImpulse(new Vector2(200,0),rectBody.getWorldCenter());
+//////                                allowRoll = false;
+//////                            }
+//////                        }
+//////                    }
+////                }
+////                if(idA.equals("rect") && idB.equals("springPlatform")){
+////                    if(rect.getY() + rect.getHeight()  > springPlatform.getY()){
+////                        contact.setEnabled(false);
+////                        onSpringPlatform = false;
+////                    }
+////                }
+//            }
+//
+//            @Override
+//            public void postSolve(Contact contact, ContactImpulse impulse) {
+//
+//            }
+//
+//            @Override
+//            public void endContact(Contact contact) {
+//                Body bodyA = contact.getFixtureA().getBody();
+//                Body bodyB = contact.getFixtureB().getBody();
+//                UserData userDataA = (UserData)bodyA.getUserData();
+//                UserData userDataB = (UserData)bodyB.getUserData();
+//                if(userDataA.type.equals("player") && userDataB.type.equals("floor")){
+//                    shape.setColor(Color.WHITE);
+//                }
+//                if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
+//                    if(onPlatform){
+//                        ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
+//                        onPlatform = false;
+//                        speedChanged = false;
+//                    }
+//                }
+//            }
+//        });
+//    }
+
     public abstract void gameOver();
 
     public void jump(){
@@ -232,6 +387,12 @@ public abstract class Player extends AnimatedSprite {
                 body.applyLinearImpulse(new Vector2(0, -100), body.getWorldCenter());
             }
         }
+    }
+
+    public void setAnimating(){
+        animating = true;
+        final long[] PLAYER_ANIMATE = new long[]{100,100,100,100,100,100,100,100};
+        animate(PLAYER_ANIMATE,0,7,true);
     }
 
 }

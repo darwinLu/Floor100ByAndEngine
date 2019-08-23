@@ -22,11 +22,13 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.shape.IAreaShape;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.text.Text;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.util.GLState;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
@@ -36,6 +38,7 @@ import pers.lx.floor100byandengine.manager.PlatformManager;
 import pers.lx.floor100byandengine.manager.ResourcesManager;
 import pers.lx.floor100byandengine.manager.SceneManager;
 import pers.lx.floor100byandengine.object.Floor;
+import pers.lx.floor100byandengine.object.LoopBackground;
 import pers.lx.floor100byandengine.object.Platform;
 import pers.lx.floor100byandengine.object.Player;
 import pers.lx.floor100byandengine.object.UserData;
@@ -60,6 +63,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     private Wall leftWall,rightWall;
     private PlatformManager platformManager;
 
+    private LoopBackground loopBackground;
+
     public enum Direction
     {
         DIRECTION_LEFT,
@@ -80,7 +85,22 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
     }
 
     private void createBackground() {
-        setBackground(new Background(Color.BLUE));
+//        setBackground(new LoopBackground(Color.BLUE));
+//        background = new Sprite(0,0,resourcesManager.background_region,vbom);
+        loopBackground = new LoopBackground(vbom){
+            @Override
+            protected void onManagedUpdate(float pSecondsElapsed) {
+                super.onManagedUpdate(pSecondsElapsed);
+                Log.d("darwin",String.valueOf(deadLinePixel));
+                Log.d("darwin",String.valueOf(loopBackground.shape1.getY()));
+                if(deadLinePixel < loopBackground.shape1.getY()){
+                    loopBackground.shape1.setY(loopBackground.shape2.getY() - loopBackground.shape1.getHeight());
+                }
+            }
+        };
+        attachChild(loopBackground);
+        attachChild(loopBackground.shape1);
+        attachChild(loopBackground.shape2);
     }
 
     private void createHUD() {
@@ -97,7 +117,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     private void createLevel(){
         //创建主角
-        player = new Player(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT - 150, vbom, camera, mPhysicsWorld,this){
+        player = new Player(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT - resourcesManager.player_region.getHeight(0) - 100, vbom, camera, mPhysicsWorld,this){
             @Override
             public void gameOver() {
                 if (!gameOverDisplayed)
@@ -106,11 +126,14 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
                 }
             }
         };
-        attachChild(player.shape);
-        player.shape.setZIndex(1);
+        attachChild(player);
+        player.setZIndex(1);
+        player.setAnimating();
+//        attachChild(player.shape);
+//        player.shape.setZIndex(1);
         //创建地面
-        floor = new Floor(CAMERA_WIDTH/2 - 100, CAMERA_HEIGHT/2 - 100, vbom, camera, mPhysicsWorld);
-        attachChild(floor.shape);
+        floor = new Floor(0, CAMERA_HEIGHT - resourcesManager.floor_region.getHeight(), vbom, camera, mPhysicsWorld);
+        attachChild(floor);
         //创建两侧墙壁
         leftWall = new Wall(0,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld,"left");
         rightWall = new Wall(CAMERA_WIDTH-2,0,2,CAMERA_HEIGHT,vbom,camera,mPhysicsWorld,"right");
@@ -119,7 +142,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
             public void onUpdate(float pSecondsElapsed) {
                 super.onUpdate(pSecondsElapsed);
                 Log.d("darwin","leftConnector update");
-                if(player.shape.getY() + player.shape.getHeight()/2 < CAMERA_HEIGHT/2){
+                if(player.getY() + player.getTiledTextureRegion().getHeight(0)/2 < CAMERA_HEIGHT/2){
                     leftWall.body.setTransform(new Vector2(leftWall.body.getPosition().x,player.body.getPosition().y),0);
                 }
             }
@@ -129,7 +152,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
             @Override
             public void onUpdate(float pSecondsElapsed) {
                 super.onUpdate(pSecondsElapsed);
-                if(player.shape.getY() + player.shape.getHeight()/2 < CAMERA_HEIGHT/2){
+                if(player.getY() + player.getTiledTextureRegion().getHeight(0)/2 < CAMERA_HEIGHT/2){
                     rightWall.body.setTransform(new Vector2(rightWall.body.getPosition().x,player.body.getPosition().y),0);
                 }
             }

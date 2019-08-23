@@ -30,6 +30,7 @@ public class Wall {
 
     private void createPhysics(float pX, float pY, float pWidth,float pHeight,Camera camera, PhysicsWorld physicsWorld, VertexBufferObjectManager vbom,String type) {
         shape = new Rectangle(pX,pY,pWidth,pHeight,vbom);
+        shape.setColor(Color.TRANSPARENT);
         final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0, 0.5f);
         body = PhysicsFactory.createBoxBody(physicsWorld, shape, BodyDef.BodyType.StaticBody, wallFixtureDef);
         body.setUserData(new UserData(type,this));

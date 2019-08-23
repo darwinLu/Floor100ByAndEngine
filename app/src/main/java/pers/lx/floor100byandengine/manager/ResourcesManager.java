@@ -51,8 +51,11 @@ public class ResourcesManager {
 
     private BuildableBitmapTextureAtlas gameTextureAtlas;
     public ITiledTextureRegion player_region;
-
-    public ITiledTextureRegion platform_region;
+    public ITiledTextureRegion normal_lr_ud_platform_region;
+    public ITextureRegion floor_region;
+    public ITiledTextureRegion roll_platform_region;
+    public ITiledTextureRegion spring_platform_region;
+    public ITextureRegion background_region;
 
     //---------------------------------------------
     // CLASS LOGIC
@@ -119,10 +122,14 @@ public class ResourcesManager {
     private void loadGameGraphics()
     {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-        gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 10240, 10240, TextureOptions.BILINEAR);
+        gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 10240, 10240, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 
-        player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "robot_run.png", 8, 1);
-        platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas,activity,"platform.png",1,1);
+        player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "robot_run_small.png", 8, 1);
+        normal_lr_ud_platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas,activity,"normal_lr_ud_platform.png",1,1);
+        roll_platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "roll_platform.png", 8, 1);
+        spring_platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform.png", 1, 1);
+        floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"floor.png");
+        background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"background.png");
         try
         {
             this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));

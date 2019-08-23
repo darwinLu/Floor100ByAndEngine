@@ -223,7 +223,7 @@ public class MainGameActivity extends BaseGameActivity implements IOnSceneTouchL
 //        this.mEngine.registerUpdateHandler(new FPSLogger());
 //
 //        final Scene scene = new Scene();
-//        scene.setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
+//        scene.setBackground(new LoopBackground(0.09804f, 0.6274f, 0.8784f));
 //
 ////        final VertexBufferObjectManager vertexBufferObjectManager = this.getVertexBufferObjectManager();
 ////        final Text centerText = new Text(100, 40, this.mFont, "Hello AndEngine!\nYou can even have multilined text!", new TextOptions(HorizontalAlign.CENTER), vertexBufferObjectManager);

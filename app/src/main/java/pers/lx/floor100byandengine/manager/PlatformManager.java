@@ -45,9 +45,9 @@ public class PlatformManager {
     public void initPlatform(GameScene gameScene,VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld){
         for(int i=0;i<platformCount;i++){
             Platform platform = new NormalPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10),CAMERA_HEIGHT - (i + 2)*200,physicsWorld,camera,gameScene,vbom);
-            platformShapeList.add(platform.shape);
+            platformShapeList.add(platform);
             platformBodyList.add(platform.body);
-            gameScene.attachChild(platform.shape);
+            gameScene.attachChild(platform);
         }
     }
 
@@ -70,9 +70,9 @@ public class PlatformManager {
         else {
             platform = new NormalPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
         }
-        platformShapeList.add(platform.shape);
+        platformShapeList.add(platform);
         platformBodyList.add(platform.body);
-        gameScene.attachChild(platform.shape);
+        gameScene.attachChild(platform);
         gameScene.sortChildren();
     }
 

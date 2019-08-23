@@ -11,6 +11,7 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
+import pers.lx.floor100byandengine.manager.ResourcesManager;
 import pers.lx.floor100byandengine.scene.GameScene;
 
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_WIDTH;
@@ -19,19 +20,19 @@ import static pers.lx.floor100byandengine.scene.GameScene.FIXTURE_DEF;
 public class UdPlatform extends Platform {
 
     public UdPlatform(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom) {
-        super( x, y, physicsWorld, camera, gameScene, vbom);
+        super( x, y, ResourcesManager.getInstance().normal_lr_ud_platform_region,physicsWorld, camera, gameScene, vbom);
         platformType = "ud";
         direction = "up";
     }
 
     @Override
     protected void createPhysics(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom) {
-        shape = new Rectangle(x,y,width,height,vbom);
-        body = PhysicsFactory.createBoxBody(physicsWorld,shape, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
+//        shape = new Rectangle(x,y,width,height,vbom);
+        body = PhysicsFactory.createBoxBody(physicsWorld,this, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
         body.setUserData(new UserData(entityType,this));
-        shape.setColor(Color.PINK);
-        shape.setUserData(body);
-        PhysicsConnector platformConnector = new PhysicsConnector(shape,body,true,true){
+//        shape.setColor(Color.PINK);
+        this.setUserData(body);
+        PhysicsConnector platformConnector = new PhysicsConnector(this,body,true,true){
             @Override
             public void onUpdate(float pSecondsElapsed) {
                 super.onUpdate(pSecondsElapsed);

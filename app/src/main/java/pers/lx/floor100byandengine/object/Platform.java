@@ -12,10 +12,12 @@ import org.andengine.engine.camera.Camera;
 import org.andengine.entity.Entity;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.shape.IAreaShape;
+import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
 import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
@@ -28,7 +30,7 @@ import static pers.lx.floor100byandengine.GameActivity.CAMERA_HEIGHT;
 import static pers.lx.floor100byandengine.GameActivity.CAMERA_WIDTH;
 import static pers.lx.floor100byandengine.scene.GameScene.FIXTURE_DEF;
 
-public abstract class Platform extends Entity {
+public abstract class Platform extends AnimatedSprite {
 
     public String entityType = "platform";
     public String platformType;
@@ -44,7 +46,8 @@ public abstract class Platform extends Entity {
     //For Test
     public Color color;
 
-    public Platform(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom){
+    public Platform(int x, int y, ITiledTextureRegion region, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom){
+        super(x,y,region,vbom);
         createPhysics(x, y, physicsWorld, camera, gameScene, vbom);
     }
 

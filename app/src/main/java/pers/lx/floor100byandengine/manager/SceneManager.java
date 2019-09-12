@@ -109,7 +109,7 @@ public class SceneManager {
             {
                 mEngine.unregisterUpdateHandler(pTimerHandler);
                 ResourcesManager.getInstance().loadGameResources();
-                gameScene = new GameScene();
+                gameScene = new GameScene(mEngine);
                 setScene(gameScene);
             }
         }));

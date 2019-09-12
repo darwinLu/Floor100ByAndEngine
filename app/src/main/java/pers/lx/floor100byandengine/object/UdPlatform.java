@@ -32,6 +32,7 @@ public class UdPlatform extends Platform {
         body.setUserData(new UserData(entityType,this));
 //        shape.setColor(Color.PINK);
         this.setUserData(body);
+        final float initialY = body.getWorldCenter().y;
         PhysicsConnector platformConnector = new PhysicsConnector(this,body,true,true){
             @Override
             public void onUpdate(float pSecondsElapsed) {
@@ -42,10 +43,10 @@ public class UdPlatform extends Platform {
                 if(direction.equals("down")){
                     body.setLinearVelocity(new Vector2(0,1));
                 }
-                if(body.getWorldCenter().y > 20){
+                if(body.getWorldCenter().y > initialY + 2){
                     direction = "up";
                 }
-                if(body.getWorldCenter().y <10) {
+                if(body.getWorldCenter().y < initialY - 2) {
                     direction = "down";
                 }
             }

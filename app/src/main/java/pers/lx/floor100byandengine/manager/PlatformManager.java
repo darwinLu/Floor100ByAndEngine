@@ -44,7 +44,7 @@ public class PlatformManager {
 
     public void initPlatform(GameScene gameScene,VertexBufferObjectManager vbom, Camera camera, PhysicsWorld physicsWorld){
         for(int i=0;i<platformCount;i++){
-            Platform platform = new NormalPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10),CAMERA_HEIGHT - (i + 2)*200,physicsWorld,camera,gameScene,vbom);
+            Platform platform = new NormalPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10),CAMERA_HEIGHT - (i + 1)*200,physicsWorld,camera,gameScene,vbom);
             platformShapeList.add(platform);
             platformBodyList.add(platform.body);
             gameScene.attachChild(platform);
@@ -63,6 +63,7 @@ public class PlatformManager {
         }
         else if(typeNumber>2 && typeNumber<=3){
             platform = new RollPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+            ((RollPlatform) platform).setAnimating();
         }
         else if(typeNumber>1 && typeNumber<=2){
             platform = new SpringPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
@@ -86,7 +87,24 @@ public class PlatformManager {
         if(platformShapeList.getFirst().getY() > gameScene.deadLinePixel){
             removePlatformFromFirst(gameScene, vbom,  camera, physicsWorld);
             addPlatformToLast(gameScene, vbom,  camera, physicsWorld);
+            gameScene.addScore(1);
         }
+    }
+
+    public void disposeAllPlatform(GameScene gameScene,PhysicsWorld physicsWorld) {
+        int currentShapeSize = platformShapeList.size();
+        for(int i=0;i<currentShapeSize;i++){
+            gameScene.detachChild(platformShapeList.getFirst());
+            platformShapeList.getFirst().dispose();
+            platformShapeList.removeFirst();
+        }
+        platformBodyList.clear();
+        int currentBodySize = platformBodyList.size();
+        for(int i=0;i<currentBodySize;i++){
+            physicsWorld.destroyBody(platformBodyList.getFirst());
+            platformBodyList.removeFirst();
+        }
+        platformBodyList.clear();
     }
 
     //---------------------------------------------
@@ -97,5 +115,4 @@ public class PlatformManager {
     {
         return INSTANCE;
     }
-
 }

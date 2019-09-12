@@ -15,7 +15,7 @@ public class LoopBackground extends Entity {
 
     public LoopBackground(VertexBufferObjectManager vbom){
         shape1 = new Sprite(0,0,ResourcesManager.getInstance().background_region,vbom);
-        shape2 = new Sprite(0,-ResourcesManager.getInstance().background_region.getHeight() + backgroundAcross,ResourcesManager.getInstance().background_region,vbom);
+        shape2 = new Sprite(0,-ResourcesManager.getInstance().background_region.getHeight() + 1,ResourcesManager.getInstance().background_region,vbom);
     }
 
 }

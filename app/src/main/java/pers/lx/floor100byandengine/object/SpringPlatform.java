@@ -19,7 +19,8 @@ import static pers.lx.floor100byandengine.scene.GameScene.FIXTURE_DEF;
 public class SpringPlatform extends Platform {
 
     public SpringPlatform(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom) {
-        super(x, y, ResourcesManager.getInstance().spring_platform_region,physicsWorld, camera, gameScene, vbom);
+        super(x, y, ResourcesManager.getInstance().spring_platform_uncompress_region,physicsWorld, camera, gameScene, vbom);
+        height = 45;
         platformType = "spring";
     }
 
@@ -28,6 +29,7 @@ public class SpringPlatform extends Platform {
 //        shape = new Rectangle(x,y,width,height,vbom);
         body = PhysicsFactory.createBoxBody(physicsWorld,this, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
         body.setUserData(new UserData(entityType,this));
+
 //        shape.setColor(Color.CYAN);
         this.setUserData(body);
         PhysicsConnector platformConnector = new PhysicsConnector(this,body,true,true){

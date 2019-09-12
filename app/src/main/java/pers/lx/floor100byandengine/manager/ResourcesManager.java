@@ -47,7 +47,9 @@ public class ResourcesManager {
     private BuildableBitmapTextureAtlas menuTextureAtlas;
     public ITextureRegion menu_background_region;
     public ITextureRegion menu_title_region;
-    public ITextureRegion menu_button_region;
+    public ITextureRegion menu_start_button_region;
+    public ITextureRegion menu_option_button_region;
+    public ITextureRegion menu_score_button_region;
 
     private BuildableBitmapTextureAtlas gameTextureAtlas;
     public ITiledTextureRegion player_region;
@@ -55,7 +57,11 @@ public class ResourcesManager {
     public ITextureRegion floor_region;
     public ITiledTextureRegion roll_platform_region;
     public ITiledTextureRegion spring_platform_region;
+    public ITiledTextureRegion spring_platform_normal_region;
+    public ITiledTextureRegion spring_platform_compress_region;
+    public ITiledTextureRegion spring_platform_uncompress_region;
     public ITextureRegion background_region;
+    public ITextureRegion replay_region;
 
     //---------------------------------------------
     // CLASS LOGIC
@@ -88,7 +94,9 @@ public class ResourcesManager {
         menuTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(),1024,1024,TextureOptions.BILINEAR);
         menu_background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas,this.activity,"menu_background.png");
         menu_title_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas,this.activity,"menu_title.png");
-        menu_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas,this.activity,"menu_button.png");
+        menu_start_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas,this.activity,"menu_start_button.png");
+        menu_option_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas,this.activity,"menu_option_button.png");
+        menu_score_button_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(menuTextureAtlas,this.activity,"menu_score_button.png");
         try
         {
             this.menuTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -122,14 +130,18 @@ public class ResourcesManager {
     private void loadGameGraphics()
     {
         BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/game/");
-        gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 10240, 10240, TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+        gameTextureAtlas = new BuildableBitmapTextureAtlas(activity.getTextureManager(), 10240, 10240, TextureOptions.REPEATING_BILINEAR_PREMULTIPLYALPHA);
 
         player_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "robot_run_small.png", 8, 1);
         normal_lr_ud_platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas,activity,"normal_lr_ud_platform.png",1,1);
         roll_platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "roll_platform.png", 8, 1);
         spring_platform_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform.png", 1, 1);
+        spring_platform_normal_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_normal.png", 1, 1);
+        spring_platform_compress_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_compress.png", 1, 1);
+        spring_platform_uncompress_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_uncompress.png", 1, 1);
         floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"floor.png");
-        background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"background.png");
+        background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"background_new.png");
+        replay_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"menu_button.png");
         try
         {
             this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -153,6 +165,7 @@ public class ResourcesManager {
 
     public void unloadGameTextures()
     {
+        gameTextureAtlas.unload();
         // TODO (Since we did not create any textures for game scene yet)
     }
 
@@ -165,6 +178,7 @@ public class ResourcesManager {
     {
         menuTextureAtlas.unload();
     }
+
 
     /**
      * @param engine

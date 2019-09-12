@@ -11,6 +11,8 @@ import org.andengine.extension.physics.box2d.PhysicsWorld;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
+import java.util.Random;
+
 import pers.lx.floor100byandengine.manager.ResourcesManager;
 import pers.lx.floor100byandengine.scene.GameScene;
 
@@ -18,10 +20,19 @@ import static pers.lx.floor100byandengine.scene.GameScene.FIXTURE_DEF;
 
 public class RollPlatform extends Platform {
 
+    public boolean animating = false;
+    private GameScene.Direction direction;
+    private Random rand = new Random();
+
     public RollPlatform(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom) {
         super(x, y, ResourcesManager.getInstance().roll_platform_region,physicsWorld, camera, gameScene, vbom);
         platformType = "roll";
-        direction = "left";
+        if(rand.nextInt(1) == 0){
+            direction = GameScene.Direction.DIRECTION_LEFT;
+        }
+        else {
+            direction = GameScene.Direction.DIRECTION_RIGHT;
+        }
     }
 
     @Override
@@ -54,7 +65,7 @@ public class RollPlatform extends Platform {
     @Override
     protected void doEffectToPlayer(Player player) {
         if (!player.speedChanged) {
-            if (direction.equals("left")) {
+            if (direction == GameScene.Direction.DIRECTION_LEFT) {
                 player.body.applyLinearImpulse(new Vector2(100, 0), player.body.getWorldCenter());
             } else {
                 player.body.applyLinearImpulse(new Vector2(-100, 0), player.body.getWorldCenter());
@@ -65,11 +76,20 @@ public class RollPlatform extends Platform {
 
     @Override
     protected void clearEffectToPlayer(Player player) {
-        if(direction.equals("left")){
+        if(direction == GameScene.Direction.DIRECTION_LEFT){
             player.body.applyLinearImpulse(new Vector2(-100,0),player.body.getWorldCenter());
         }
         else{
             player.body.applyLinearImpulse(new Vector2(100,0),player.body.getWorldCenter());
+        }
+    }
+
+    public void setAnimating(){
+        animating = true;
+        final long[] ROLL_ANIMATE = new long[]{100,100,100,100,100,100,100,100};
+        animate(ROLL_ANIMATE,0,7,true);
+        if (direction == GameScene.Direction.DIRECTION_RIGHT) {
+            setFlippedHorizontal(true);
         }
     }
 }

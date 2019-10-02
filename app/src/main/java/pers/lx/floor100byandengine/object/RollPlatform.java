@@ -27,7 +27,7 @@ public class RollPlatform extends Platform {
     public RollPlatform(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom) {
         super(x, y, ResourcesManager.getInstance().roll_platform_region,physicsWorld, camera, gameScene, vbom);
         platformType = "roll";
-        if(rand.nextInt(1) == 0){
+        if(rand.nextInt(2) == 0){
             direction = GameScene.Direction.DIRECTION_LEFT;
         }
         else {
@@ -66,9 +66,9 @@ public class RollPlatform extends Platform {
     protected void doEffectToPlayer(Player player) {
         if (!player.speedChanged) {
             if (direction == GameScene.Direction.DIRECTION_LEFT) {
-                player.body.applyLinearImpulse(new Vector2(100, 0), player.body.getWorldCenter());
+                player.body.applyLinearImpulse(new Vector2(20, 0), player.body.getWorldCenter());
             } else {
-                player.body.applyLinearImpulse(new Vector2(-100, 0), player.body.getWorldCenter());
+                player.body.applyLinearImpulse(new Vector2(-20, 0), player.body.getWorldCenter());
             }
             player.speedChanged = true;
         }
@@ -77,10 +77,10 @@ public class RollPlatform extends Platform {
     @Override
     protected void clearEffectToPlayer(Player player) {
         if(direction == GameScene.Direction.DIRECTION_LEFT){
-            player.body.applyLinearImpulse(new Vector2(-100,0),player.body.getWorldCenter());
+            player.body.applyLinearImpulse(new Vector2(-20,0),player.body.getWorldCenter());
         }
         else{
-            player.body.applyLinearImpulse(new Vector2(100,0),player.body.getWorldCenter());
+            player.body.applyLinearImpulse(new Vector2(20,0),player.body.getWorldCenter());
         }
     }
 

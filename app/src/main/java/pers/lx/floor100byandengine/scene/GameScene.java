@@ -45,7 +45,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     public static final FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(1, 0, 0);
 
-    private Player player;
+    public Player player;
     private Floor floor;
     private Wall leftWall,rightWall;
     private PlatformManager platformManager;

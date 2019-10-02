@@ -60,6 +60,7 @@ public class ResourcesManager {
     public ITiledTextureRegion spring_platform_normal_region;
     public ITiledTextureRegion spring_platform_compress_region;
     public ITiledTextureRegion spring_platform_uncompress_region;
+    public ITiledTextureRegion spring_platform_tile_region;
     public ITextureRegion background_region;
     public ITextureRegion replay_region;
 
@@ -139,6 +140,7 @@ public class ResourcesManager {
         spring_platform_normal_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_normal.png", 1, 1);
         spring_platform_compress_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_compress.png", 1, 1);
         spring_platform_uncompress_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_uncompress.png", 1, 1);
+        spring_platform_tile_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_tile.png", 3, 1);
         floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"floor.png");
         background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"background_new.png");
         replay_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"menu_button.png");

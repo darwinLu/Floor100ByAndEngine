@@ -38,11 +38,14 @@ public abstract class Player extends AnimatedSprite {
     public boolean running = false;
     public boolean animating = false;
     public boolean speedChanged = false;
-    private boolean onPlatform = false;
+    public boolean onPlatform = false;
+    public boolean pressJumping = false;
 
-    private GameScene.Direction direction;
+    public GameScene.Direction direction;
 
     private Platform currentPlatform;
+
+//    public boolean needToChange = false;
 
     // ---------------------------------------------
     // CONSTRUCTOR
@@ -61,7 +64,7 @@ public abstract class Player extends AnimatedSprite {
     // CLASS LOGIC
     // ---------------------------------------------
 
-    private void createPhysics(final Camera camera, PhysicsWorld physicsWorld,VertexBufferObjectManager vbom,final GameScene gameScene){
+    private void createPhysics(final Camera camera, final PhysicsWorld physicsWorld, VertexBufferObjectManager vbom, final GameScene gameScene){
         body = PhysicsFactory.createBoxBody(physicsWorld,this, BodyDef.BodyType.DynamicBody,FIXTURE_DEF);
         body.setFixedRotation(true);
         body.setUserData(new UserData("player",this));
@@ -78,6 +81,10 @@ public abstract class Player extends AnimatedSprite {
                 if(this.getShape().getY() > gameScene.deadLinePixel){
                     gameOver();
                 }
+//                if(needToChange){
+//                    body.setTransform(body.getPosition().x,body.getPosition().y + currentPlatform.getHeight()/3/32,body.getAngle());
+//                    needToChange = false;
+//                }
             }
         };
         physicsWorld.registerPhysicsConnector(playerConnector);
@@ -124,14 +131,23 @@ public abstract class Player extends AnimatedSprite {
                     if (((Player) userDataA.object).getY() + ((Player) userDataA.object).getTiledTextureRegion().getHeight(0) > ((Platform) userDataB.object).getY()) {
                         contact.setEnabled(false);
                     } else {
+                        currentPlatform = (Platform)(userDataB.object);
                         if(!onPlatform){
                             gameScene.getForceBar().resetForceBar();
+                            if(currentPlatform.getClass() == SpringPlatform.class){
+                                ((SpringPlatform)currentPlatform).playSpringAnimate(SpringPlatform.SPRING_ANIMATE_TYPE.PRESS,(Player)(userDataA.object));
+//                                ((Player)userDataA.object).changePlayerPositionOnSpring();
+//                                needToChange = true;
+                            }
                         }
                         onPlatform = true;
                         jumping = false;
+                        pressJumping = false;
                         gameScene.getForceBar().startAddForce();
-                        currentPlatform = (Platform)(userDataB.object);
                         ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
+//                        if(currentPlatform.getClass() == SpringPlatform.class){
+//                            ((SpringPlatform)currentPlatform).changeSpringStatus(SpringPlatform.SPRING_STATUS.COMPRESS,(Player)(userDataA.object));
+//                        }
                     }
                 }
             }
@@ -154,11 +170,17 @@ public abstract class Player extends AnimatedSprite {
                 }
                 if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
                     if(onPlatform) {
-                        ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
+                        ((Platform) userDataB.object).clearEffectToPlayer((Player) userDataA.object);
                         onPlatform = false;
                         jumping = true;
-                        speedChanged = false;
+//                        speedChanged = false;
                         gameScene.getForceBar().stopAddForce();
+                        currentPlatform = (Platform)(userDataB.object);
+                        if(!pressJumping){
+                            if(currentPlatform.getClass() == SpringPlatform.class){
+                                ((SpringPlatform)currentPlatform).playSpringAnimate(SpringPlatform.SPRING_ANIMATE_TYPE.RESET,(Player)(userDataA.object));
+                            }
+                        }
                     }
                 }
             }
@@ -173,8 +195,10 @@ public abstract class Player extends AnimatedSprite {
             if(onPlatform){
                 if(currentPlatform.platformType.equals("spring")){
                     body.applyLinearImpulse(new Vector2(0, -80), body.getWorldCenter());
+                    ((SpringPlatform)currentPlatform).playSpringAnimate(SpringPlatform.SPRING_ANIMATE_TYPE.RELEASE,this);
                 }
             }
+            pressJumping = true;
         }
     }
 
@@ -183,5 +207,13 @@ public abstract class Player extends AnimatedSprite {
         final long[] PLAYER_ANIMATE = new long[]{100,100,100,100,100,100,100,100};
         animate(PLAYER_ANIMATE,0,7,true);
     }
+
+    public Platform getCurrentPlatform() {
+        return currentPlatform;
+    }
+
+//    public void changePlayerPositionOnSpring(){
+//        setPosition(getX(),getY() - 100);
+//    }
 
 }

@@ -26,7 +26,7 @@ public class LrPlatform extends Platform {
     }
 
     @Override
-    protected void createPhysics(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom) {
+    protected void createPhysics(int x, int y, PhysicsWorld physicsWorld, Camera camera, final GameScene gameScene, VertexBufferObjectManager vbom) {
 //        shape = new Rectangle(x,y,width,height,vbom);
         body = PhysicsFactory.createBoxBody(physicsWorld,this, BodyDef.BodyType.KinematicBody,FIXTURE_DEF);
         body.setUserData(new UserData(entityType,this));
@@ -57,9 +57,9 @@ public class LrPlatform extends Platform {
     protected void doEffectToPlayer(Player player) {
         if (!player.speedChanged) {
             if (direction.equals("left")) {
-                player.body.applyLinearImpulse(new Vector2(30, 0), player.body.getWorldCenter());
+                player.body.applyLinearImpulse(new Vector2(5, 0), player.body.getWorldCenter());
             } else {
-                player.body.applyLinearImpulse(new Vector2(-30, 0), player.body.getWorldCenter());
+                player.body.applyLinearImpulse(new Vector2(-5, 0), player.body.getWorldCenter());
             }
             player.speedChanged = true;
         }
@@ -68,10 +68,11 @@ public class LrPlatform extends Platform {
     @Override
     protected void clearEffectToPlayer(Player player) {
         if(direction.equals("left")){
-            player.body.applyLinearImpulse(new Vector2(-30,0),player.body.getWorldCenter());
+            player.body.applyLinearImpulse(new Vector2(-5,0),player.body.getWorldCenter());
         }
         else{
-            player.body.applyLinearImpulse(new Vector2(30,0),player.body.getWorldCenter());
+            player.body.applyLinearImpulse(new Vector2(5,0),player.body.getWorldCenter());
         }
+        player.speedChanged = false;
     }
 }

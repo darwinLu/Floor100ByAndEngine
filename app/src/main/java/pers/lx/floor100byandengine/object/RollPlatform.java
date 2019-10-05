@@ -21,7 +21,7 @@ import static pers.lx.floor100byandengine.scene.GameScene.FIXTURE_DEF;
 public class RollPlatform extends Platform {
 
     public boolean animating = false;
-    private GameScene.Direction direction;
+    public GameScene.Direction direction;
     private Random rand = new Random();
 
     public RollPlatform(int x, int y, PhysicsWorld physicsWorld, Camera camera, GameScene gameScene, VertexBufferObjectManager vbom) {
@@ -88,7 +88,7 @@ public class RollPlatform extends Platform {
         animating = true;
         final long[] ROLL_ANIMATE = new long[]{100,100,100,100,100,100,100,100};
         animate(ROLL_ANIMATE,0,7,true);
-        if (direction == GameScene.Direction.DIRECTION_RIGHT) {
+        if (direction == GameScene.Direction.DIRECTION_LEFT) {
             setFlippedHorizontal(true);
         }
     }

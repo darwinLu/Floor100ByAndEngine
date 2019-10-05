@@ -55,9 +55,10 @@ public class PlatformManager {
         float lastHeight = platformShapeList.getLast().getY();
         Platform platform ;
         int typeNumber = rand.nextInt(10);
-        platform = new RollPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
-        ((RollPlatform) platform).setAnimating();
-        //        if(typeNumber > 7){
+        platform = new LrPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+//       platform = new RollPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+//        ((RollPlatform) platform).setAnimating();
+//        if(typeNumber > 7){
 //            platform = new LrPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
 //        }
 //        else if(typeNumber>3 && typeNumber<=7){

@@ -40,6 +40,8 @@ public abstract class Player extends AnimatedSprite {
     public boolean speedChanged = false;
     public boolean onPlatform = false;
     public boolean pressJumping = false;
+    public boolean onLrPlatform = false;
+    public boolean onRollPlatform = false;
 
     public GameScene.Direction direction;
 
@@ -80,6 +82,22 @@ public abstract class Player extends AnimatedSprite {
                 }
                 if(this.getShape().getY() > gameScene.deadLinePixel){
                     gameOver();
+                }
+                if(onLrPlatform){
+                    if(currentPlatform.direction.equals("left")){
+                        body.setTransform(body.getPosition().x - 0.05f,body.getPosition().y,0);
+                    }
+                    else if(currentPlatform.direction.equals("right")){
+                        body.setTransform(body.getPosition().x + 0.05f,body.getPosition().y,0);
+                    }
+                }
+                if(onRollPlatform){
+                    if(((RollPlatform)currentPlatform).direction == GameScene.Direction.DIRECTION_LEFT){
+                        body.setTransform(body.getPosition().x - 0.05f,body.getPosition().y,0);
+                    }
+                    else if(((RollPlatform)currentPlatform).direction == GameScene.Direction.DIRECTION_RIGHT){
+                        body.setTransform(body.getPosition().x + 0.05f,body.getPosition().y,0);
+                    }
                 }
 //                if(needToChange){
 //                    body.setTransform(body.getPosition().x,body.getPosition().y + currentPlatform.getHeight()/3/32,body.getAngle());
@@ -144,10 +162,13 @@ public abstract class Player extends AnimatedSprite {
                         jumping = false;
                         pressJumping = false;
                         gameScene.getForceBar().startAddForce();
-                        ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
-//                        if(currentPlatform.getClass() == SpringPlatform.class){
-//                            ((SpringPlatform)currentPlatform).changeSpringStatus(SpringPlatform.SPRING_STATUS.COMPRESS,(Player)(userDataA.object));
-//                        }
+//                        ((Platform) userDataB.object).doEffectToPlayer((Player) userDataA.object);
+                        if(currentPlatform.getClass() == LrPlatform.class){
+                            onLrPlatform = true;
+                        }
+                        if(currentPlatform.getClass() == RollPlatform.class){
+                            onRollPlatform = true;
+                        }
                     }
                 }
             }
@@ -170,7 +191,7 @@ public abstract class Player extends AnimatedSprite {
                 }
                 if (userDataA.type.equals("player") && userDataB.type.equals("platform")) {
                     if(onPlatform) {
-                        ((Platform) userDataB.object).clearEffectToPlayer((Player) userDataA.object);
+//                        ((Platform) userDataB.object).clearEffectToPlayer((Player) userDataA.object);
                         onPlatform = false;
                         jumping = true;
 //                        speedChanged = false;
@@ -180,6 +201,12 @@ public abstract class Player extends AnimatedSprite {
                             if(currentPlatform.getClass() == SpringPlatform.class){
                                 ((SpringPlatform)currentPlatform).playSpringAnimate(SpringPlatform.SPRING_ANIMATE_TYPE.RESET,(Player)(userDataA.object));
                             }
+                        }
+                        if(currentPlatform.getClass() == LrPlatform.class){
+                            onLrPlatform = false;
+                        }
+                        if(currentPlatform.getClass() == RollPlatform.class){
+                            onRollPlatform = false;
                         }
                     }
                 }

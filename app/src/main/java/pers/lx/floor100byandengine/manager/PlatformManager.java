@@ -55,25 +55,25 @@ public class PlatformManager {
         float lastHeight = platformShapeList.getLast().getY();
         Platform platform ;
         int typeNumber = rand.nextInt(10);
-        platform = new LrPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+//        platform = new LrPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
 //       platform = new RollPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
 //        ((RollPlatform) platform).setAnimating();
-//        if(typeNumber > 7){
-//            platform = new LrPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
-//        }
-//        else if(typeNumber>3 && typeNumber<=7){
-//            platform = new UdPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
-//        }
-//        else if(typeNumber>2 && typeNumber<=3){
-//            platform = new RollPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
-//            ((RollPlatform) platform).setAnimating();
-//        }
-//        else if(typeNumber>1 && typeNumber<=2){
-//            platform = new SpringPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
-//        }
-//        else {
-//            platform = new NormalPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
-//        }
+        if(typeNumber > 7){
+            platform = new LrPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+        }
+        else if(typeNumber>3 && typeNumber<=7){
+            platform = new UdPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+        }
+        else if(typeNumber>2 && typeNumber<=3){
+            platform = new RollPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+            ((RollPlatform) platform).setAnimating();
+        }
+        else if(typeNumber>1 && typeNumber<=2){
+            platform = new SpringPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+        }
+        else {
+            platform = new NormalPlatform(CAMERA_WIDTH / 10 * rand.nextInt(10), (int) (lastHeight - 200),physicsWorld,camera,gameScene,vbom);
+        }
         platformShapeList.add(platform);
         platformBodyList.add(platform.body);
         gameScene.attachChild(platform);

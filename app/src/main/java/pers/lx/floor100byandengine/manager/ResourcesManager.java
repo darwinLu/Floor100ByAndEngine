@@ -2,6 +2,10 @@ package pers.lx.floor100byandengine.manager;
 
 import android.graphics.Color;
 
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.Camera;
 import org.andengine.opengl.font.Font;
@@ -18,6 +22,8 @@ import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
+
+import java.io.IOException;
 
 import pers.lx.floor100byandengine.GameActivity;
 
@@ -63,6 +69,9 @@ public class ResourcesManager {
     public ITiledTextureRegion spring_platform_tile_region;
     public ITextureRegion background_region;
     public ITextureRegion replay_region;
+
+    public Music mMusic;
+    public Sound jump_sound,power_sound,game_over_sound;
 
     //---------------------------------------------
     // CLASS LOGIC
@@ -143,7 +152,7 @@ public class ResourcesManager {
         spring_platform_tile_region = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(gameTextureAtlas, activity, "spring_platform_tile.png", 3, 1);
         floor_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"floor.png");
         background_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"background_new.png");
-        replay_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"menu_button.png");
+        replay_region = BitmapTextureAtlasTextureRegionFactory.createFromAsset(gameTextureAtlas,activity,"menu_restart_button.png");
         try
         {
             this.gameTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 1, 0));
@@ -151,6 +160,19 @@ public class ResourcesManager {
         }
         catch (final ITextureAtlasBuilder.TextureAtlasBuilderException e)
         {
+            Debug.e(e);
+        }
+
+        MusicFactory.setAssetBasePath("mfx/");
+        SoundFactory.setAssetBasePath("mfx/");
+        try{
+            mMusic = MusicFactory.createMusicFromAsset(this.engine.getMusicManager(),activity.getApplicationContext(),"bell.mp3");
+            mMusic.setLooping(true);
+            jump_sound = SoundFactory.createSoundFromAsset(this.engine.getSoundManager(),activity.getApplicationContext(),"jump.mp3");
+            power_sound = SoundFactory.createSoundFromAsset(this.engine.getSoundManager(),activity.getApplicationContext(),"power.mp3");
+            game_over_sound = SoundFactory.createSoundFromAsset(this.engine.getSoundManager(),activity.getApplicationContext(),"game_over.mp3");
+        }
+        catch (IOException e){
             Debug.e(e);
         }
     }

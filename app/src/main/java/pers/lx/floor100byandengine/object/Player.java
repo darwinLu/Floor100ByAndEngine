@@ -226,6 +226,7 @@ public abstract class Player extends AnimatedSprite {
                 }
             }
             pressJumping = true;
+            ResourcesManager.getInstance().jump_sound.play();
         }
     }
 

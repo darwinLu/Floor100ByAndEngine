@@ -5,6 +5,7 @@ import android.hardware.SensorManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
+import org.andengine.audio.music.Music;
 import org.andengine.engine.Engine;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
@@ -55,6 +56,8 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     private LoopBackground loopBackground;
 
+    private Music mMusic;
+
     public enum Direction
     {
         DIRECTION_LEFT,
@@ -77,6 +80,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
         createLevel();
         createGameOverText();
         setOnSceneTouchListener(this);
+        playMusic();
+    }
+
+    private void playMusic() {
+        mMusic = ResourcesManager.getInstance().mMusic;
+        mMusic.play();
     }
 
     private void createBackground() {
@@ -119,6 +128,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
             public void gameOver() {
                 if (!gameOverDisplayed)
                 {
+                    ResourcesManager.getInstance().game_over_sound.play();
                     displayGameOverText();
                 }
             }
@@ -177,6 +187,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     @Override
     public void onBackKeyPressed() {
+        mMusic.stop();
         SceneManager.getInstance().loadMenuScene(engine);
     }
 
@@ -218,6 +229,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
         camera.setHUD(null);
         camera.setCenter(270,480);
         engineLock.unlock();
+        mMusic.stop();
     }
 
     @Override
@@ -244,7 +256,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     private void displayGameOverText()
     {
-        camera.setChaseEntity(null);
+//        camera.setChaseEntity(null);
         gameOverText.setPosition(camera.getCenterX() - gameOverText.getWidth()/2 , camera.getCenterY() - gameOverText.getHeight()/2);
         attachChild(gameOverText);
         gameOverDisplayed = true;
@@ -255,10 +267,12 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
 
     private MenuScene pauseScene(){
         final MenuScene pauseGame= new MenuScene(camera);
+        pauseGame.setPosition(0, 0);
 
         final SpriteMenuItem btnPlay = new SpriteMenuItem(1, resourcesManager.replay_region,vbom);
-        btnPlay.setPosition(CAMERA_WIDTH- resourcesManager.replay_region.getWidth()-100, 50);
-        btnPlay.setScale(2);
+//        btnPlay.setPosition(0, 0);
+        btnPlay.setPosition(CAMERA_WIDTH/2 - btnPlay.getWidth()/2, CAMERA_HEIGHT/2 + 50);
+//        btnPlay.setScale(2);
         pauseGame.addMenuItem(btnPlay);
 
         pauseGame.setBackgroundEnabled(false);
@@ -267,6 +281,7 @@ public class GameScene extends BaseScene implements IOnSceneTouchListener {
             public boolean onMenuItemClicked(MenuScene pMenuScene, IMenuItem pMenuItem, float pMenuItemLocalX, float pMenuItemLocalY) {
                 switch(pMenuItem.getID()){
                     case 1:
+                        disposeScene();
                         SceneManager.getInstance().loadGameScene(engine);
                         return true;
                     default:

@@ -2,6 +2,7 @@ package pers.lx.floor100byandengine.object;
 
 import android.util.Log;
 
+import org.andengine.audio.sound.Sound;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.Entity;
 import org.andengine.entity.primitive.Rectangle;
@@ -35,6 +36,9 @@ public class ForceBar extends Entity {
 
     private HUD hud;
 
+    private Sound powerSound;
+    private boolean isPlayingSound = false;
+
     public ForceBar(int x,int y,int max, int current, int width, int height, int column, VertexBufferObjectManager vbom){
         this.mX = x;
         this.mY = y;
@@ -45,6 +49,7 @@ public class ForceBar extends Entity {
         this.column = column;
         this.vbom = vbom;
         createHUD();
+        powerSound = ResourcesManager.getInstance().power_sound;
     }
 
     private void createHUD() {
@@ -69,6 +74,11 @@ public class ForceBar extends Entity {
         super.onManagedUpdate(pSecondsElapsed);
         if(listeningForce){
             if(addingForce){
+                if(!isPlayingSound){
+                    powerSound.setLooping(true);
+                    powerSound.play();
+                    isPlayingSound = true;
+                }
                 this.mTimerSecondsElapsed += pSecondsElapsed;
                 if(this.mTimerSecondsElapsed >= this.mTimerSeconds) {
                     this.forceAdded = true;
@@ -99,10 +109,13 @@ public class ForceBar extends Entity {
 
     public void startAddForce() {
         addingForce = true;
+
     }
 
     public void stopAddForce() {
         addingForce = false;
+        powerSound.stop();
+        isPlayingSound = false;
     }
 
     public int getPower() {
